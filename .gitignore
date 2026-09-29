@@ -1,0 +1,82 @@
+# =========================
+# UNITY GENERATED
+# =========================
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+MemoryCaptures/
+
+# =========================
+# OS FILES
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# IDE
+# =========================
+.vs/
+.idea/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Rider / JetBrains
+*.DotSettings.user
+
+# =========================
+# UNITY META (важливо)
+# =========================
+# НЕ ігнорити meta файли!
+# Вони повинні комітитись
+
+# =========================
+# BLENDER
+# =========================
+*.blend1
+*.blend1.meta
+
+# =========================
+# BUILDS
+# =========================
+*.apk
+*.aab
+*.app
+
+# =========================
+# ADDRESSABLES
+# =========================
+/ServerData
+/Assets/StreamingAssets/aa*
+/Assets/AddressableAssetsData/*/*.bin*
+
+# =========================
+# TEMP / CACHE
+# =========================
+*.log
+*.tmp
+
+# =========================
+# VISUAL SCRIPTING
+# =========================
+/Assets/Unity.VisualScripting.Generated/
+
+# =========================
+# TESTS
+# =========================
+/Assets/InitTestScene*.unity*
+Assets/Game/City/bike/harley_davidson_fat_boy_with_biker.glb
