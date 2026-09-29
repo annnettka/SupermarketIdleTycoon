@@ -154,6 +154,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3959502566335870729}
     m_Modifications:
+    - target: {fileID: 1489069665106847800, guid: f2a0404ed85029f4bbdb1185d15522e6, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e0ddc8323116fa54b8aed550a11ee42e, type: 2}
     - target: {fileID: 4546341389574700552, guid: f2a0404ed85029f4bbdb1185d15522e6, type: 3}
       propertyPath: m_Name
       value: Checkout Visual
@@ -220,6 +224,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Purchase FX
       objectReference: {fileID: 0}
+    - target: {fileID: 4653221738633499635, guid: adac76f188f07674a980b9ef4f2086e2, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 4636f392eb1e46944a21c9f644dfe475, type: 2}
     - target: {fileID: 6940807226288942901, guid: adac76f188f07674a980b9ef4f2086e2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

@@ -92,6 +92,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Purchase FX
       objectReference: {fileID: 0}
+    - target: {fileID: 4653221738633499635, guid: adac76f188f07674a980b9ef4f2086e2, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 4636f392eb1e46944a21c9f644dfe475, type: 2}
     - target: {fileID: 6940807226288942901, guid: adac76f188f07674a980b9ef4f2086e2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -194,6 +198,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Shelf Visual
       objectReference: {fileID: 0}
+    - target: {fileID: 8412306326311670521, guid: 68e9c96cedb82e547879362d04050ce9, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e0ddc8323116fa54b8aed550a11ee42e, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

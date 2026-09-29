@@ -122,6 +122,7 @@ namespace SupermarketTycoon.Editor
                 var progressionConfig = LoadOrCreateConfig<SupermarketTycoon.Progression.ProgressionConfig>(ProgressionConfigPath);
 
                 CreateProjectMaterials();
+                MaterialRepairTool.EnsureFixedMaterials();
                 CreatePurchaseFxPrefab();
                 CreateShelfPrefab();
                 CreateCheckoutPrefab();
@@ -399,6 +400,7 @@ namespace SupermarketTycoon.Editor
             instance.transform.SetParent(parent, false);
             instance.transform.localPosition = Vector3.zero;
             instance.transform.localRotation = Quaternion.identity;
+            MaterialRepairTool.ApplyKnownReplacements(instance);
             return instance;
         }
 

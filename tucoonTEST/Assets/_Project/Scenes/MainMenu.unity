@@ -2299,6 +2299,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Shelf Display
       objectReference: {fileID: 0}
+    - target: {fileID: 8412306326311670521, guid: 68e9c96cedb82e547879362d04050ce9, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e0ddc8323116fa54b8aed550a11ee42e, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4130,6 +4134,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1489069665106847800, guid: f2a0404ed85029f4bbdb1185d15522e6, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e0ddc8323116fa54b8aed550a11ee42e, type: 2}
     - target: {fileID: 4546341389574700552, guid: f2a0404ed85029f4bbdb1185d15522e6, type: 3}
       propertyPath: m_Name
       value: Checkout Display

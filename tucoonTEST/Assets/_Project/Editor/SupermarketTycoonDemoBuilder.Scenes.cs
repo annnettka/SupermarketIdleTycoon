@@ -285,6 +285,7 @@ namespace SupermarketTycoon.Editor
             instance.name = name;
             instance.transform.SetPositionAndRotation(position, rotation);
             instance.transform.localScale = Vector3.one * scale;
+            MaterialRepairTool.ApplyKnownReplacements(instance);
             return instance;
         }
 
