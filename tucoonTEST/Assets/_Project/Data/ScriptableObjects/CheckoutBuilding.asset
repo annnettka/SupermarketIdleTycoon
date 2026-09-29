@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1d8f1a2d4bca394cb9dc4e7cd0f5174, type: 3}
+  m_Name: CheckoutBuilding
+  m_EditorClassIdentifier: SupermarketTycoon.Runtime::SupermarketTycoon.Buildings.BuildingDefinition
+  id: checkout.basic
+  displayName: Checkout
+  type: 1
+  prefab: {fileID: 4517535598662702020, guid: 2e6c90d2e56457140a31389c8a3a103e, type: 3}
+  cost: 100
+  requiredLevel: 1
+  capacity: 3
+  incomeMultiplier: 1

@@ -1,0 +1,42 @@
+using SupermarketTycoon.Core;
+using SupermarketTycoon.UI;
+using UnityEngine;
+
+namespace SupermarketTycoon.SceneFlow
+{
+    public sealed class MainMenuEntryPoint : SceneEntryPoint
+    {
+        [SerializeField] private MainMenuView mainMenuView;
+        [SerializeField] private SettingsView settingsView;
+
+        private SettingsController settingsController;
+        private MainMenuController mainMenuController;
+        private ApplicationContext applicationContext;
+
+        public void Configure(MainMenuView menu, SettingsView settings)
+        {
+            mainMenuView = menu;
+            settingsView = settings;
+        }
+
+        public override void Initialize(ApplicationContext context)
+        {
+            applicationContext = context;
+            settingsController = new SettingsController(settingsView, context, ResetProgress);
+            mainMenuController = new MainMenuController(mainMenuView, context, settingsController);
+        }
+
+        private void OnDestroy()
+        {
+            mainMenuController?.Dispose();
+            settingsController?.Dispose();
+        }
+
+        private void ResetProgress()
+        {
+            applicationContext.SaveRepository.Delete();
+            mainMenuController?.Refresh();
+            mainMenuView.SetVisible(true);
+        }
+    }
+}

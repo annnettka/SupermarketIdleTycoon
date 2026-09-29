@@ -1,7 +1,10 @@
 {
   "name": "SupermarketTycoon.Editor",
   "rootNamespace": "SupermarketTycoon.Editor",
-  "references": [],
+  "references": [
+    "SupermarketTycoon.Runtime",
+    "Unity.AI.Navigation"
+  ],
   "includePlatforms": [
     "Editor"
   ],

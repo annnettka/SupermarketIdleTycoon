@@ -1,0 +1,83 @@
+using System.Collections.Generic;
+using SupermarketTycoon.Customers;
+using UnityEngine;
+
+namespace SupermarketTycoon.Checkout
+{
+    public sealed class CheckoutStation : MonoBehaviour
+    {
+        [SerializeField] private Transform[] queuePoints;
+
+        private readonly List<CustomerAgent> queue = new List<CustomerAgent>();
+
+        public bool HasSpace
+        {
+            get
+            {
+                RemoveMissingCustomers();
+                return queuePoints != null && queue.Count < queuePoints.Length;
+            }
+        }
+
+        public int Count => queue.Count;
+
+        public void Configure(Transform[] points)
+        {
+            queuePoints = points;
+        }
+
+        public bool TryJoin(CustomerAgent customer)
+        {
+            RemoveMissingCustomers();
+            if (customer == null || queue.Contains(customer) || !HasSpace)
+            {
+                return false;
+            }
+
+            queue.Add(customer);
+            return true;
+        }
+
+        public bool IsFirst(CustomerAgent customer)
+        {
+            RemoveMissingCustomers();
+            return queue.Count > 0 && queue[0] == customer;
+        }
+
+        public Transform GetQueuePoint(CustomerAgent customer)
+        {
+            RemoveMissingCustomers();
+            var index = queue.IndexOf(customer);
+            if (index < 0 || queuePoints == null || queuePoints.Length == 0)
+            {
+                return null;
+            }
+
+            return queuePoints[Mathf.Min(index, queuePoints.Length - 1)];
+        }
+
+        public void Complete(CustomerAgent customer)
+        {
+            if (IsFirst(customer))
+            {
+                queue.RemoveAt(0);
+            }
+        }
+
+        public void Leave(CustomerAgent customer)
+        {
+            queue.Remove(customer);
+        }
+
+        private void RemoveMissingCustomers()
+        {
+            for (var i = queue.Count - 1; i >= 0; i--)
+            {
+                if (queue[i] == null || !queue[i].gameObject.activeInHierarchy)
+                {
+                    queue.RemoveAt(i);
+                }
+            }
+        }
+    }
+}
