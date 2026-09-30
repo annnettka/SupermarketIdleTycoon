@@ -2316,7 +2316,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.34, y: 0.25}
   m_AnchorMax: {x: 0.34, y: 0.25}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -38, y: 0}
   m_SizeDelta: {x: 200, y: 66}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &909534780
@@ -2521,6 +2521,7 @@ MonoBehaviour:
   resetConfirmation: {fileID: 213364776}
   confirmResetButton: {fileID: 909534782}
   cancelResetButton: {fileID: 1996746792}
+  transition: {fileID: 0}
 --- !u!224 &973613749
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4445,7 +4446,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.66, y: 0.25}
   m_AnchorMax: {x: 0.66, y: 0.25}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 37, y: 0}
   m_SizeDelta: {x: 200, y: 66}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2036845305
