@@ -13,6 +13,7 @@ namespace SupermarketTycoon.Customers
         [SerializeField, Min(1f)] private float queuePatience = 15f;
         [SerializeField, Min(0f)] private float spawnWeight = 1f;
         [SerializeField, Min(1)] private int requiredLevel = 1;
+        [SerializeField, Range(0f, 1f)] private float premiumShelfPreference = 0.1f;
         [SerializeField] private Color presentationColor = Color.white;
 
         public string Id => id;
@@ -23,6 +24,7 @@ namespace SupermarketTycoon.Customers
         public float QueuePatience => Mathf.Max(1f, queuePatience);
         public float SpawnWeight => Mathf.Max(0f, spawnWeight);
         public int RequiredLevel => Mathf.Max(1, requiredLevel);
+        public float PremiumShelfPreference => Mathf.Clamp01(premiumShelfPreference);
         public Color PresentationColor => presentationColor;
     }
 }

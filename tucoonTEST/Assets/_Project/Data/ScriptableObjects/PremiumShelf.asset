@@ -13,25 +13,33 @@ MonoBehaviour:
   m_Name: PremiumShelf
   m_EditorClassIdentifier: SupermarketTycoon.Runtime::SupermarketTycoon.Buildings.BuildingDefinition
   id: shelf.premium
-  displayName: Premium Shelf
+  displayName: Premium Goods
   type: 0
   prefab: {fileID: 2713323255150495839, guid: 23253049b85f1bc4f9c7fb7a92beee77, type: 3}
-  cost: 350
+  cost: 600
   requiredLevel: 4
   capacity: 2
   incomeMultiplier: 1
+  premium: 1
   upgradeLevels:
   - level: 1
     upgradeCost: 0
     requiredPlayerLevel: 4
     capacity: 2
-    incomeMultiplier: 2
+    incomeMultiplier: 1.25
     interactionDuration: 2
-    visualScale: 1.06
+    visualScale: 1
   - level: 2
     upgradeCost: 450
     requiredPlayerLevel: 5
     capacity: 3
-    incomeMultiplier: 2.5
+    incomeMultiplier: 1.5
     interactionDuration: 1.6
-    visualScale: 1.12
+    visualScale: 1.08
+  - level: 3
+    upgradeCost: 750
+    requiredPlayerLevel: 5
+    capacity: 4
+    incomeMultiplier: 1.75
+    interactionDuration: 1.25
+    visualScale: 1.16

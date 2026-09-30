@@ -17,6 +17,7 @@ namespace SupermarketTycoon.Buildings
         public Transform InteractionPoint => interactionPoint != null ? interactionPoint : transform;
         public float ShoppingDuration => shoppingDuration;
         public ShelfStockView StockView => stockView;
+        public bool IsPremium => stockView != null && stockView.IsPremium;
         public float IncomeMultiplier { get; private set; } = 1f;
         public bool IsAvailable
         {

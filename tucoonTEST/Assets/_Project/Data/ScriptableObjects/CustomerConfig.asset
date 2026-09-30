@@ -17,6 +17,6 @@ MonoBehaviour:
   angularSpeed: 720
   stoppingDistance: 0.15
   shoppingDuration: 2.25
-  paymentDuration: 0.65
+  paymentDuration: 2.5
   retryDelay: 0.75
   maximumActiveByLevel: 030000000400000006000000080000000a000000

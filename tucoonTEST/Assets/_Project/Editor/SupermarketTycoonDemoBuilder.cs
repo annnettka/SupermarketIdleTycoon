@@ -244,17 +244,19 @@ namespace SupermarketTycoon.Editor
                 var premiumShelf = CreateBuildingDefinition(
                     PremiumShelfDefinitionPath,
                     "shelf.premium",
-                    "Premium Shelf",
+                    "Premium Goods",
                     BuildingType.Shelf,
                     PremiumShelfPrefabPath,
-                    350,
+                    600,
                     4,
                     2,
                     new[]
                     {
-                        new BuildingLevelDefinition(1, 0, 4, 2, 2f, 2f, 1.06f),
-                        new BuildingLevelDefinition(2, 450, 5, 3, 2.5f, 1.6f, 1.12f)
-                    });
+                        new BuildingLevelDefinition(1, 0, 4, 2, 1.25f, 2f, 1f),
+                        new BuildingLevelDefinition(2, 450, 5, 3, 1.5f, 1.6f, 1.08f),
+                        new BuildingLevelDefinition(3, 750, 5, 4, 1.75f, 1.25f, 1.16f)
+                    },
+                    true);
 
                 BuildBootstrapScene(gameConfig);
                 BuildMainMenuScene();
@@ -428,9 +430,9 @@ namespace SupermarketTycoon.Editor
         {
             return new[]
             {
-                CreateCustomerProfile(NormalCustomerProfilePath, "customer.normal", "Normal", 1f, 1f, 1f, 15f, 0.65f, 1, Color.white),
-                CreateCustomerProfile(ImpatientCustomerProfilePath, "customer.impatient", "Impatient", 1.18f, 0.8f, 0.85f, 8f, 0.35f, 1, new Color(1f, 0.72f, 0.6f)),
-                CreateCustomerProfile(VipCustomerProfilePath, "customer.vip", "VIP", 0.9f, 1.1f, 2f, 20f, 0.25f, 4, new Color(1f, 0.88f, 0.35f))
+                CreateCustomerProfile(NormalCustomerProfilePath, "customer.normal", "Normal", 1f, 1f, 1f, 15f, 0.65f, 1, 0.12f, Color.white),
+                CreateCustomerProfile(ImpatientCustomerProfilePath, "customer.impatient", "Impatient", 1.18f, 0.8f, 0.85f, 8f, 0.35f, 1, 0.04f, new Color(1f, 0.72f, 0.6f)),
+                CreateCustomerProfile(VipCustomerProfilePath, "customer.vip", "VIP", 0.9f, 1.1f, 2f, 20f, 0.25f, 4, 0.9f, new Color(1f, 0.88f, 0.35f))
             };
         }
 
@@ -444,6 +446,7 @@ namespace SupermarketTycoon.Editor
             float patience,
             float weight,
             int requiredLevel,
+            float premiumPreference,
             Color color)
         {
             var profile = LoadOrCreateConfig<CustomerProfileDefinition>(path);
@@ -456,6 +459,7 @@ namespace SupermarketTycoon.Editor
             serialized.FindProperty("queuePatience").floatValue = patience;
             serialized.FindProperty("spawnWeight").floatValue = weight;
             serialized.FindProperty("requiredLevel").intValue = requiredLevel;
+            serialized.FindProperty("premiumShelfPreference").floatValue = premiumPreference;
             serialized.FindProperty("presentationColor").colorValue = color;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(profile);
@@ -480,7 +484,8 @@ namespace SupermarketTycoon.Editor
             int cost,
             int requiredLevel,
             int capacity,
-            BuildingLevelDefinition[] levels)
+            BuildingLevelDefinition[] levels,
+            bool premium = false)
         {
             var definition = AssetDatabase.LoadAssetAtPath<BuildingDefinition>(path);
             if (definition == null)
@@ -498,6 +503,7 @@ namespace SupermarketTycoon.Editor
             serialized.FindProperty("requiredLevel").intValue = requiredLevel;
             serialized.FindProperty("capacity").intValue = capacity;
             serialized.FindProperty("incomeMultiplier").floatValue = 1f;
+            serialized.FindProperty("premium").boolValue = premium;
             var levelsProperty = serialized.FindProperty("upgradeLevels");
             levelsProperty.arraySize = levels != null ? levels.Length : 0;
             for (var i = 0; i < levelsProperty.arraySize; i++)
@@ -541,6 +547,27 @@ namespace SupermarketTycoon.Editor
                         AccentYellow);
                     accent.transform.localPosition = new Vector3(0f, 0.07f, 0f);
                     UnityEngine.Object.DestroyImmediate(accent.GetComponent<Collider>());
+
+                    var header = CreateFallbackPrimitive(
+                        root.transform,
+                        PrimitiveType.Cube,
+                        "Premium Header",
+                        new Vector3(3.1f, 0.46f, 0.1f),
+                        new Color(0.68f, 0.45f, 0.05f));
+                    header.transform.localPosition = new Vector3(0f, 2.12f, 0.25f);
+                    UnityEngine.Object.DestroyImmediate(header.GetComponent<Collider>());
+
+                    var title = new GameObject("Premium Goods Label");
+                    title.transform.SetParent(root.transform, false);
+                    title.transform.localPosition = new Vector3(0f, 2.12f, 0.18f);
+                    var titleText = title.AddComponent<TextMesh>();
+                    titleText.text = "PREMIUM GOODS";
+                    titleText.anchor = TextAnchor.MiddleCenter;
+                    titleText.alignment = TextAlignment.Center;
+                    titleText.characterSize = 0.075f;
+                    titleText.fontSize = 42;
+                    titleText.fontStyle = FontStyle.Bold;
+                    titleText.color = Color.white;
                 }
 
                 var stock = CreateShelfStock(root.transform, products, premium);

@@ -22,6 +22,10 @@ namespace SupermarketTycoon.Customers
         internal CheckoutStation Checkout { get; private set; }
         internal float PaymentMultiplier { get; private set; } = 1f;
         public ProductDefinition CarriedProduct => productCarryView != null ? productCarryView.ActiveProduct : null;
+        public string ProfileId => Context?.Profile != null ? Context.Profile.Id : string.Empty;
+        public float PremiumShelfPreference => Context?.Profile != null
+            ? Context.Profile.PremiumShelfPreference
+            : 0f;
 
         internal bool HasArrived
         {

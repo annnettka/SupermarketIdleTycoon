@@ -20,4 +20,5 @@ MonoBehaviour:
   queuePatience: 8
   spawnWeight: 0.35
   requiredLevel: 1
+  premiumShelfPreference: 0.04
   presentationColor: {r: 1, g: 0.72, b: 0.6, a: 1}

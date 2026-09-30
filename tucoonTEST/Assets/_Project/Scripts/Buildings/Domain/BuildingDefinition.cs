@@ -59,6 +59,7 @@ namespace SupermarketTycoon.Buildings
         [SerializeField, Min(1)] private int requiredLevel = 1;
         [SerializeField, Min(1)] private int capacity = 1;
         [SerializeField, Min(0.01f)] private float incomeMultiplier = 1f;
+        [SerializeField] private bool premium;
         [SerializeField] private BuildingLevelDefinition[] upgradeLevels;
 
         public string Id => id;
@@ -69,6 +70,7 @@ namespace SupermarketTycoon.Buildings
         public int RequiredLevel => requiredLevel;
         public int Capacity => capacity;
         public float IncomeMultiplier => incomeMultiplier;
+        public bool IsPremium => premium;
         public int MaxLevel => upgradeLevels != null && upgradeLevels.Length > 0
             ? upgradeLevels.Length
             : 1;

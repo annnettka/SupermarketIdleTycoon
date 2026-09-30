@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4663137930736147142}
   - component: {fileID: 405571598734209863}
   - component: {fileID: 1698969113119469814}
-  - component: {fileID: 2734595457854682086}
+  - component: {fileID: 1390589721610721097}
   m_Layer: 0
   m_Name: FloatingIncome
   m_TagString: Untagged
@@ -93,7 +93,7 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 
---- !u!114 &2734595457854682086
+--- !u!114 &1390589721610721097
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

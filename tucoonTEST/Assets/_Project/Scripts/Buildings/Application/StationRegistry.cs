@@ -45,10 +45,21 @@ namespace SupermarketTycoon.Buildings
 
         public bool TryReserveShelf(CustomerAgent customer, out ShelfStation shelf)
         {
+            var preferPremium = customer != null && customer.PremiumShelfPreference >= 0.5f;
+            if (TryReserveShelf(customer, preferPremium, out shelf))
+            {
+                return true;
+            }
+
+            return TryReserveShelf(customer, !preferPremium, out shelf);
+        }
+
+        private bool TryReserveShelf(CustomerAgent customer, bool premium, out ShelfStation shelf)
+        {
             for (var i = 0; i < shelves.Count; i++)
             {
                 var candidate = shelves[i];
-                if (candidate != null && candidate.TryReserve(customer))
+                if (candidate != null && candidate.IsPremium == premium && candidate.TryReserve(customer))
                 {
                     shelf = candidate;
                     return true;

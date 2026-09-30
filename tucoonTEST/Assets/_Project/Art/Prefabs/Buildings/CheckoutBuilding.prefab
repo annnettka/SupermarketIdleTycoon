@@ -71,8 +71,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3959502566335870729}
-  - component: {fileID: 2568419048827050695}
-  - component: {fileID: 5756071586743542164}
+  - component: {fileID: 4705973062515826849}
+  - component: {fileID: 7004881797987618042}
   m_Layer: 0
   m_Name: CheckoutBuilding
   m_TagString: Untagged
@@ -102,7 +102,7 @@ Transform:
   - {fileID: 447531095107463325}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2568419048827050695
+--- !u!114 &4705973062515826849
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -120,7 +120,7 @@ MonoBehaviour:
   - {fileID: 6815625159771971957}
   - {fileID: 2850071010574476511}
   - {fileID: 4646781542274474813}
---- !u!114 &5756071586743542164
+--- !u!114 &7004881797987618042
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -20,6 +20,7 @@ MonoBehaviour:
   requiredLevel: 3
   capacity: 2
   incomeMultiplier: 1
+  premium: 0
   upgradeLevels:
   - level: 1
     upgradeCost: 0
