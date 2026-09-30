@@ -23,6 +23,7 @@ namespace SupermarketTycoon.Expansion
         private readonly BuildingService buildings;
         private readonly AudioService audio;
         private readonly List<StoreExpansionSpot> spots = new List<StoreExpansionSpot>();
+        // Keep IDs independent of scene objects so final saves remain valid during nondeterministic Unity teardown.
         private readonly HashSet<string> purchasedIds = new HashSet<string>(StringComparer.Ordinal);
 
         public StoreExpansionService(

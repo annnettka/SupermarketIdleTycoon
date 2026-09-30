@@ -50,6 +50,7 @@ namespace SupermarketTycoon.SceneFlow
         private EconomyService economy;
         private ProgressionService progression;
         private CustomerSpawner customers;
+        private GameSessionEventCoordinator eventCoordinator;
         private GameSaveCoordinator saveCoordinator;
         private SettingsController settingsController;
         private PauseController pauseController;
@@ -160,7 +161,17 @@ namespace SupermarketTycoon.SceneFlow
                 gameConfig.SpawnInterval,
                 gameConfig.MaximumActiveCustomers);
 
-            SubscribeGameplayEvents();
+            eventCoordinator = new GameSessionEventCoordinator(
+                buildings,
+                upgrades,
+                expansions,
+                employees,
+                economy,
+                customers,
+                progression,
+                rating,
+                objectives,
+                stats);
             objectives.SynchronizeExistingState(buildings, employees, expansions, rating);
 
             saveCoordinator = new GameSaveCoordinator(
@@ -237,7 +248,6 @@ namespace SupermarketTycoon.SceneFlow
                 saveCoordinator.SaveNow();
             }
 
-            UnsubscribeGameplayEvents();
             pause?.SetPaused(false);
             offlineController?.Dispose();
             employeeController?.Dispose();
@@ -246,122 +256,10 @@ namespace SupermarketTycoon.SceneFlow
             pauseController?.Dispose();
             settingsController?.Dispose();
             saveCoordinator?.Dispose();
+            eventCoordinator?.Dispose();
             customers?.Shutdown();
             expansions?.Dispose();
             buildings?.Dispose();
-        }
-
-        private void SubscribeGameplayEvents()
-        {
-            buildings.BuildingBuilt += OnBuildingBuilt;
-            upgrades.Upgraded += OnBuildingUpgraded;
-            expansions.Purchased += OnExpansionPurchased;
-            employees.Changed += OnEmployeeChanged;
-            economy.IncomeAdded += OnIncomeAdded;
-            customers.PaymentCompleted += OnCustomerServed;
-            customers.CustomerLost += OnCustomerLost;
-            progression.LevelChanged += OnLevelChanged;
-            rating.Changed += OnRatingChanged;
-        }
-
-        private void UnsubscribeGameplayEvents()
-        {
-            if (buildings != null)
-            {
-                buildings.BuildingBuilt -= OnBuildingBuilt;
-            }
-
-            if (upgrades != null)
-            {
-                upgrades.Upgraded -= OnBuildingUpgraded;
-            }
-
-            if (expansions != null)
-            {
-                expansions.Purchased -= OnExpansionPurchased;
-            }
-
-            if (employees != null)
-            {
-                employees.Changed -= OnEmployeeChanged;
-            }
-
-            if (economy != null)
-            {
-                economy.IncomeAdded -= OnIncomeAdded;
-            }
-
-            if (customers != null)
-            {
-                customers.PaymentCompleted -= OnCustomerServed;
-                customers.CustomerLost -= OnCustomerLost;
-            }
-
-            if (progression != null)
-            {
-                progression.LevelChanged -= OnLevelChanged;
-            }
-
-            if (rating != null)
-            {
-                rating.Changed -= OnRatingChanged;
-            }
-        }
-
-        private void OnBuildingBuilt(BuildSpot _, BuildingDefinition definition)
-        {
-            stats.RecordBuildingPurchased();
-            objectives.RecordBuildingBuilt(definition);
-        }
-
-        private void OnBuildingUpgraded(BuildSpot spot, int _)
-        {
-            stats.RecordUpgradePurchased();
-            rating.RecordStoreUpgrade();
-            objectives.RecordBuildingUpgraded(spot.Definition);
-        }
-
-        private void OnExpansionPurchased(StoreExpansionDefinition definition)
-        {
-            rating.RecordStoreUpgrade();
-            objectives.RecordExpansionPurchased(definition.Id);
-        }
-
-        private void OnEmployeeChanged()
-        {
-            if (employees.CurrentLevel > 0)
-            {
-                objectives.RecordEmployeePurchased(employees.Definition.Id);
-            }
-        }
-
-        private void OnIncomeAdded(int amount)
-        {
-            stats.RecordIncome(amount);
-            objectives.RecordMoneyEarned(amount);
-        }
-
-        private void OnCustomerServed(Vector3 _, int __)
-        {
-            stats.RecordCustomerServed();
-            rating.RecordSuccessfulTransaction();
-            objectives.RecordCustomerServed();
-        }
-
-        private void OnCustomerLost(Vector3 _)
-        {
-            stats.RecordCustomerLost();
-            rating.RecordCustomerLost();
-        }
-
-        private void OnLevelChanged(int _)
-        {
-            objectives.RefreshLevel();
-        }
-
-        private void OnRatingChanged(float value)
-        {
-            objectives.RefreshRating(value);
         }
 
         private void ResetProgress()

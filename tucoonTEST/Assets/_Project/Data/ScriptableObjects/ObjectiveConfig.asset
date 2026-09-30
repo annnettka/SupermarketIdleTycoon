@@ -26,7 +26,7 @@ MonoBehaviour:
     moneyReward: 30
     xpReward: 20
   - type: 2
-    displayName: Serve Customers
+    displayName: Serve 5 Customers
     filterId: 
     target: 5
     moneyReward: 100
@@ -49,22 +49,28 @@ MonoBehaviour:
     target: 1
     moneyReward: 75
     xpReward: 30
-  - type: 3
-    displayName: Earn $500
+  - type: 2
+    displayName: Serve 15 Customers
     filterId: 
-    target: 500
+    target: 15
     moneyReward: 100
     xpReward: 40
+  - type: 4
+    displayName: Reach Level 3
+    filterId: 
+    target: 3
+    moneyReward: 100
+    xpReward: 0
   - type: 6
     displayName: Unlock Store Expansion
     filterId: expansion.main
     target: 1
     moneyReward: 150
     xpReward: 50
-  - type: 2
-    displayName: Serve 25 Customers
-    filterId: 
-    target: 25
+  - type: 0
+    displayName: Build the Second Checkout
+    filterId: checkout.expansion
+    target: 1
     moneyReward: 200
     xpReward: 75
   - type: 7

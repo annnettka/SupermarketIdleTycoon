@@ -46,6 +46,7 @@ namespace SupermarketTycoon.Editor
         private const string ShelfDefinitionPath = DataRoot + "/ShelfBuilding.asset";
         private const string CheckoutDefinitionPath = DataRoot + "/CheckoutBuilding.asset";
         private const string ShelfExpansionDefinitionPath = DataRoot + "/ShelfExpansion.asset";
+        private const string StoreExpansionShelfDefinitionPath = DataRoot + "/StoreExpansionShelf.asset";
         private const string CheckoutExpansionDefinitionPath = DataRoot + "/CheckoutExpansion.asset";
         private const string PremiumShelfDefinitionPath = DataRoot + "/PremiumShelf.asset";
 
@@ -63,6 +64,15 @@ namespace SupermarketTycoon.Editor
         private const string SourceWallPath = "Assets/Gridness Studios/Grocery Store Pack Lite/Prefabs/Building/Wall_Green_HalfDetail.prefab";
         private const string SourceDoorWallPath = "Assets/Gridness Studios/Grocery Store Pack Lite/Prefabs/Building/Wall_Flat_Green_HalfDetail_Doored.prefab";
         private const string SourceDustFxPath = "Assets/SimpleFX/Prefabs/FX_Dust_Prefab_01.prefab";
+
+        private static readonly string[] CustomerVisualSourcePaths =
+        {
+            "Assets/Hodaart/HodaartLowPolyCharacterCollection3/Prefabs/Character 01.prefab",
+            "Assets/Hodaart/HodaartLowPolyCharacterCollection3/Prefabs/Character 02.prefab",
+            "Assets/Hodaart/HodaartLowPolyCharacterCollection3/Prefabs/Character 03.prefab",
+            "Assets/Hodaart/HodaartLowPolyCharacterCollection3/Prefabs/Character 04.prefab",
+            "Assets/Hodaart/HodaartLowPolyCharacterCollection3/Prefabs/Character 05.prefab"
+        };
 
         private static readonly string[] RequiredFolders =
         {
@@ -191,6 +201,21 @@ namespace SupermarketTycoon.Editor
                         new BuildingLevelDefinition(2, 175, 2, 2, 1.25f, 1.9f, 1.04f),
                         new BuildingLevelDefinition(3, 275, 4, 3, 1.5f, 1.6f, 1.08f)
                     });
+                var storeExpansionShelf = CreateBuildingDefinition(
+                    StoreExpansionShelfDefinitionPath,
+                    "shelf.store-expansion",
+                    "Expansion Shelf",
+                    BuildingType.Shelf,
+                    ShelfPrefabPath,
+                    225,
+                    3,
+                    2,
+                    new[]
+                    {
+                        new BuildingLevelDefinition(1, 0, 3, 2, 1.2f, 2.1f, 1.02f),
+                        new BuildingLevelDefinition(2, 300, 4, 3, 1.55f, 1.7f, 1.08f),
+                        new BuildingLevelDefinition(3, 500, 5, 4, 1.9f, 1.4f, 1.13f)
+                    });
                 var checkoutExpansion = CreateBuildingDefinition(
                     CheckoutExpansionDefinitionPath,
                     "checkout.expansion",
@@ -230,6 +255,7 @@ namespace SupermarketTycoon.Editor
                     shelf,
                     checkout,
                     shelfExpansion,
+                    storeExpansionShelf,
                     checkoutExpansion,
                     premiumShelf,
                     customerProfiles,
@@ -309,7 +335,7 @@ namespace SupermarketTycoon.Editor
             {
                 "Shelf and Checkout",
                 "Second Shelf and Cashier",
-                "Store Expansion and Second Checkout",
+                "Store Expansion, Expansion Shelf, and Second Checkout",
                 "VIP Customers and Premium Shelf",
                 "Maximum Customer Flow"
             };
@@ -332,13 +358,14 @@ namespace SupermarketTycoon.Editor
             {
                 new ObjectiveDefinition(ObjectiveType.BuildBuilding, "Build a Shelf", 1, "shelf.basic", 0, 20),
                 new ObjectiveDefinition(ObjectiveType.BuildBuilding, "Build a Checkout", 1, "checkout.basic", 30, 20),
-                new ObjectiveDefinition(ObjectiveType.ServeCustomers, "Serve Customers", 5, null, 100, 30),
+                new ObjectiveDefinition(ObjectiveType.ServeCustomers, "Serve 5 Customers", 5, null, 100, 30),
                 new ObjectiveDefinition(ObjectiveType.UpgradeBuilding, "Upgrade a Shelf", 1, "shelf.basic", 0, 30),
                 new ObjectiveDefinition(ObjectiveType.ReachLevel, "Reach Level 2", 2, null, 75, 0),
                 new ObjectiveDefinition(ObjectiveType.BuyEmployee, "Hire a Cashier", 1, "employee.cashier", 75, 30),
-                new ObjectiveDefinition(ObjectiveType.EarnMoney, "Earn $500", 500, null, 100, 40),
+                new ObjectiveDefinition(ObjectiveType.ServeCustomers, "Serve 15 Customers", 15, null, 100, 40),
+                new ObjectiveDefinition(ObjectiveType.ReachLevel, "Reach Level 3", 3, null, 100, 0),
                 new ObjectiveDefinition(ObjectiveType.BuyExpansion, "Unlock Store Expansion", 1, "expansion.main", 150, 50),
-                new ObjectiveDefinition(ObjectiveType.ServeCustomers, "Serve 25 Customers", 25, null, 200, 75),
+                new ObjectiveDefinition(ObjectiveType.BuildBuilding, "Build the Second Checkout", 1, "checkout.expansion", 200, 75),
                 new ObjectiveDefinition(ObjectiveType.ReachRating, "Reach Store Rating 4.0", 40, null, 200, 100),
                 new ObjectiveDefinition(ObjectiveType.ReachLevel, "Reach Level 5", 5, null, 500, 0)
             });
@@ -550,18 +577,35 @@ namespace SupermarketTycoon.Editor
                 navigation.angularSpeed = 720f;
                 navigation.stoppingDistance = 0.15f;
 
+                var visualSelector = root.AddComponent<CustomerVisualSelector>();
+                var variants = new CustomerVisualVariant[CustomerVisualSourcePaths.Length];
+                for (var i = 0; i < CustomerVisualSourcePaths.Length; i++)
+                {
+                    var visual = AddNestedVisual(
+                        root.transform,
+                        CustomerVisualSourcePaths[i],
+                        $"Customer Visual {i + 1}");
+                    if (visual != null)
+                    {
+                        visual.transform.localScale = Vector3.one * 0.82f;
+                    }
+                    else
+                    {
+                        visual = CreateFallbackPrimitive(
+                            root.transform,
+                            PrimitiveType.Capsule,
+                            $"Customer Visual {i + 1}",
+                            new Vector3(0.62f + i * 0.04f, 0.82f + i * 0.03f, 0.62f),
+                            Color.HSVToRGB(i / (float)CustomerVisualSourcePaths.Length, 0.55f, 0.9f));
+                        visual.transform.localPosition = Vector3.up * 0.9f;
+                    }
+
+                    variants[i] = new CustomerVisualVariant($"customer.visual.{i + 1:00}", visual);
+                }
+
+                visualSelector.Configure(variants);
                 var customer = root.AddComponent<CustomerAgent>();
-                customer.Configure(navigation);
-                var source = AddNestedVisual(root.transform, SourceCharacterPath, "Character Visual");
-                if (source != null)
-                {
-                    source.transform.localScale = Vector3.one * 0.82f;
-                }
-                else
-                {
-                    var fallback = CreateFallbackPrimitive(root.transform, PrimitiveType.Capsule, "Character Visual", new Vector3(0.7f, 0.9f, 0.7f), AccentYellow);
-                    fallback.transform.localPosition = Vector3.up * 0.9f;
-                }
+                customer.Configure(navigation, visualSelector);
 
                 PrefabUtility.SaveAsPrefabAsset(root, CustomerPrefabPath);
             }

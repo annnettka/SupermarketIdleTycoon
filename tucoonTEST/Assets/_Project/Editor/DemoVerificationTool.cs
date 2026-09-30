@@ -59,6 +59,7 @@ namespace SupermarketTycoon.Editor
                 DataRoot + "/ShelfBuilding.asset",
                 DataRoot + "/CheckoutBuilding.asset",
                 DataRoot + "/ShelfExpansion.asset",
+                DataRoot + "/StoreExpansionShelf.asset",
                 DataRoot + "/CheckoutExpansion.asset",
                 DataRoot + "/PremiumShelf.asset"
             };
@@ -68,6 +69,29 @@ namespace SupermarketTycoon.Editor
                 if (definition != null && definition.MaxLevel < 2)
                 {
                     errors.Add($"Building definition has no upgrade path: {buildingPaths[i]}");
+                }
+            }
+
+            var customerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabRoot + "/Characters/Customer.prefab");
+            var visualSelector = customerPrefab != null
+                ? customerPrefab.GetComponent<CustomerVisualSelector>()
+                : null;
+            var variants = visualSelector != null
+                ? new SerializedObject(visualSelector).FindProperty("variants")
+                : null;
+            if (variants == null || variants.arraySize < 5)
+            {
+                errors.Add("Customer wrapper must configure at least five visual variants.");
+            }
+            else
+            {
+                for (var i = 0; i < variants.arraySize; i++)
+                {
+                    var root = variants.GetArrayElementAtIndex(i).FindPropertyRelative("root");
+                    if (root == null || root.objectReferenceValue == null)
+                    {
+                        errors.Add($"Customer visual variant {i + 1} has no project-owned visual root.");
+                    }
                 }
             }
         }
@@ -128,9 +152,9 @@ namespace SupermarketTycoon.Editor
                 return;
             }
 
-            if (buildSpots.Count != 5)
+            if (buildSpots.Count != 6)
             {
-                errors.Add($"Expected five BuildSpots, found {buildSpots.Count}.");
+                errors.Add($"Expected six BuildSpots, found {buildSpots.Count}.");
             }
 
             if (expansionSpots.Count != 1)
@@ -162,7 +186,7 @@ namespace SupermarketTycoon.Editor
             RequireReference(entryData, "statsView", errors);
             RequireReference(entryData, "settingsView", errors);
             RequireArray(entryData, "customerProfiles", 3, errors);
-            RequireArray(entryData, "buildSpots", 5, errors);
+            RequireArray(entryData, "buildSpots", 6, errors);
             RequireArray(entryData, "expansionSpots", 1, errors);
         }
 

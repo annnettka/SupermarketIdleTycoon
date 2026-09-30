@@ -1,9 +1,11 @@
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using SupermarketTycoon.Core;
 using SupermarketTycoon.Save;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace SupermarketTycoon.Tests
 {
@@ -68,6 +70,52 @@ namespace SupermarketTycoon.Tests
             finally
             {
                 UnityEngine.Object.DestroyImmediate(config);
+                Directory.Delete(directory, true);
+            }
+        }
+
+        [Test]
+        public void LoadOrCreate_CorruptedSaveReturnsFreshDataAndKeepsBackup()
+        {
+            var directory = Path.Combine(Path.GetTempPath(), "supermarket-corrupt-save-test-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            try
+            {
+                File.WriteAllText(Path.Combine(directory, "supermarket-save.json"), "{ definitely not valid json");
+                LogAssert.Expect(LogType.Warning, new Regex("Could not load gameplay save.*"));
+
+                var repository = new JsonSaveRepository(directory);
+                var loaded = repository.LoadOrCreate(config);
+
+                Assert.That(loaded.SaveVersion, Is.EqualTo(SaveData.CurrentVersion));
+                Assert.That(loaded.Money, Is.EqualTo(config.StartingMoney));
+                Assert.That(File.Exists(Path.Combine(directory, "supermarket-save.backup.json")), Is.True);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(config);
+                Directory.Delete(directory, true);
+            }
+        }
+
+        [Test]
+        public void Delete_RemovesGameplaySaveForResetProgress()
+        {
+            var directory = Path.Combine(Path.GetTempPath(), "supermarket-reset-save-test-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            try
+            {
+                var repository = new JsonSaveRepository(directory);
+                repository.Save(new SaveData { Money = 123 });
+                Assert.That(repository.HasSave, Is.True);
+
+                repository.Delete();
+
+                Assert.That(repository.HasSave, Is.False);
+            }
+            finally
+            {
                 Directory.Delete(directory, true);
             }
         }

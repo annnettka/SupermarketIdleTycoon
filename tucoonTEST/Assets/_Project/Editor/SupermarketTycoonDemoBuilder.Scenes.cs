@@ -81,6 +81,7 @@ namespace SupermarketTycoon.Editor
             BuildingDefinition shelf,
             BuildingDefinition checkout,
             BuildingDefinition shelfExpansion,
+            BuildingDefinition storeExpansionShelf,
             BuildingDefinition checkoutExpansion,
             BuildingDefinition premiumShelf,
             CustomerProfileDefinition[] customerProfiles,
@@ -101,8 +102,9 @@ namespace SupermarketTycoon.Editor
                     CreateWorldBuildSpot("spot.shelf.a", shelf, new Vector3(-3.2f, 0.12f, -2.4f), Quaternion.identity, camera),
                     CreateWorldBuildSpot("spot.checkout.a", checkout, new Vector3(3.2f, 0.12f, -2.4f), Quaternion.Euler(0f, 180f, 0f), camera),
                     CreateWorldBuildSpot("spot.shelf.b", shelfExpansion, new Vector3(-3.2f, 0.12f, 1.1f), Quaternion.identity, camera),
-                    CreateWorldBuildSpot("spot.checkout.b", checkoutExpansion, new Vector3(3.2f, 0.12f, 4.2f), Quaternion.Euler(0f, 180f, 0f), camera, expansionDefinition.Id),
-                    CreateWorldBuildSpot("spot.shelf.premium", premiumShelf, new Vector3(-3.2f, 0.12f, 4.5f), Quaternion.identity, camera, expansionDefinition.Id)
+                    CreateWorldBuildSpot("spot.shelf.expansion", storeExpansionShelf, new Vector3(0f, 0.12f, 4.6f), Quaternion.identity, camera, expansionDefinition.Id),
+                    CreateWorldBuildSpot("spot.checkout.b", checkoutExpansion, new Vector3(4f, 0.12f, 5.3f), Quaternion.identity, camera, expansionDefinition.Id),
+                    CreateWorldBuildSpot("spot.shelf.premium", premiumShelf, new Vector3(-4f, 0.12f, 4.8f), Quaternion.identity, camera, expansionDefinition.Id)
                 };
 
                 var expansionSpot = CreateStoreExpansionSpot(expansionDefinition, camera);

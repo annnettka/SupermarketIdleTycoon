@@ -25,6 +25,7 @@ namespace SupermarketTycoon.Buildings
         private readonly StationRegistry stations;
         private readonly AudioService audio;
         private readonly Dictionary<string, BuildSpot> spots = new Dictionary<string, BuildSpot>();
+        // Save state is authoritative here because Unity may destroy scene BuildSpots before the composition root saves on teardown.
         private readonly Dictionary<string, BuiltBuildingData> builtStates =
             new Dictionary<string, BuiltBuildingData>();
 

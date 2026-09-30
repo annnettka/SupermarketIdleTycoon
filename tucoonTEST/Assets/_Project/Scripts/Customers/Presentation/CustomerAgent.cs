@@ -9,15 +9,11 @@ namespace SupermarketTycoon.Customers
     [RequireComponent(typeof(NavMeshAgent))]
     public sealed class CustomerAgent : MonoBehaviour
     {
-        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
-        private static readonly int ColorId = Shader.PropertyToID("_Color");
-
         [SerializeField] private NavMeshAgent navigationAgent;
+        [SerializeField] private CustomerVisualSelector visualSelector;
 
         private ICustomerState state;
         private bool warnedAboutNavMesh;
-        private Renderer[] renderers;
-        private MaterialPropertyBlock propertyBlock;
 
         internal CustomerRuntimeContext Context { get; private set; }
         internal ShelfStation Shelf { get; private set; }
@@ -37,9 +33,10 @@ namespace SupermarketTycoon.Customers
             }
         }
 
-        public void Configure(NavMeshAgent agent)
+        public void Configure(NavMeshAgent agent, CustomerVisualSelector visuals = null)
         {
             navigationAgent = agent;
+            visualSelector = visuals;
         }
 
         public void Begin(CustomerRuntimeContext runtimeContext)
@@ -54,7 +51,9 @@ namespace SupermarketTycoon.Customers
             navigationAgent.acceleration = Context.Config.Acceleration;
             navigationAgent.angularSpeed = Context.Config.AngularSpeed;
             navigationAgent.stoppingDistance = Context.Config.StoppingDistance;
-            ApplyProfilePresentation();
+            visualSelector?.Select(
+                Context.Progression.CurrentLevel,
+                Context.Profile != null ? Context.Profile.PresentationColor : Color.white);
             ChangeState(new CustomerSpawnState(this));
         }
 
@@ -75,13 +74,13 @@ namespace SupermarketTycoon.Customers
 
         private void Awake()
         {
-            renderers = GetComponentsInChildren<Renderer>(true);
-            propertyBlock = new MaterialPropertyBlock();
+            visualSelector ??= GetComponent<CustomerVisualSelector>();
         }
 
         private void Reset()
         {
             navigationAgent = GetComponent<NavMeshAgent>();
+            visualSelector = GetComponent<CustomerVisualSelector>();
         }
 
         private void Update()
@@ -179,27 +178,5 @@ namespace SupermarketTycoon.Customers
             }
         }
 
-        private void ApplyProfilePresentation()
-        {
-            if (renderers == null || propertyBlock == null)
-            {
-                return;
-            }
-
-            var color = Context.Profile != null ? Context.Profile.PresentationColor : Color.white;
-            for (var i = 0; i < renderers.Length; i++)
-            {
-                var renderer = renderers[i];
-                if (renderer == null)
-                {
-                    continue;
-                }
-
-                renderer.GetPropertyBlock(propertyBlock);
-                propertyBlock.SetColor(BaseColorId, color);
-                propertyBlock.SetColor(ColorId, color);
-                renderer.SetPropertyBlock(propertyBlock);
-            }
-        }
     }
 }
