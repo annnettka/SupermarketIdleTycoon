@@ -9,6 +9,7 @@ using SupermarketTycoon.Customers;
 using SupermarketTycoon.Employees;
 using SupermarketTycoon.Expansion;
 using SupermarketTycoon.Objectives;
+using SupermarketTycoon.Products;
 using SupermarketTycoon.UI;
 using Unity.AI.Navigation;
 using UnityEditor;
@@ -58,6 +59,7 @@ namespace SupermarketTycoon.Editor
         private const string PurchaseFxPrefabPath = PrefabRoot + "/VFX/BuildingPurchaseFX.prefab";
 
         private const string SourceShelfPath = "Assets/Gridness Studios/Grocery Store Pack Lite/Prefabs/Shelves/Shelf_Flat.prefab";
+        private const string SourceMiniShelfPath = "Assets/Gridness Studios/Grocery Store Pack Lite/Prefabs/Shelves/Stand_Mini.prefab";
         private const string SourceCheckoutPath = "Assets/Gridness Studios/Grocery Store Pack Lite/Prefabs/Shop/Cachier.prefab";
         private const string SourceCharacterPath = "Assets/Hodaart/HodaartLowPolyCharacterCollection3/Prefabs/Character 01.prefab";
         private const string SourceFloorPath = "Assets/Gridness Studios/Grocery Store Pack Lite/Prefabs/Building/Floor_Squared_Gray.prefab";
@@ -82,8 +84,11 @@ namespace SupermarketTycoon.Editor
             PrefabRoot,
             PrefabRoot + "/Buildings",
             PrefabRoot + "/Characters",
+            PrefabRoot + "/Products",
+            PrefabRoot + "/Environment",
             PrefabRoot + "/UI",
             PrefabRoot + "/VFX",
+            DataRoot + "/Products",
             Root + "/Audio",
             SceneRoot,
             Root + "/Tests/EditMode"
@@ -151,10 +156,13 @@ namespace SupermarketTycoon.Editor
 
                 CreateProjectMaterials();
                 MaterialRepairTool.EnsureFixedMaterials();
+                var products = CreateProductAssets();
+                CreateEnvironmentPrefabs(products);
                 CreatePurchaseFxPrefab();
-                CreateShelfPrefab();
+                CreateShelfPrefab(products, ShelfPrefabPath, false);
+                CreateShelfPrefab(products, PremiumShelfPrefabPath, true);
                 CreateCheckoutPrefab();
-                CreateCustomerPrefab();
+                CreateCustomerPrefab(products);
                 CreateCashierPrefab();
                 CreateFloatingIncomePrefab();
 
@@ -238,7 +246,7 @@ namespace SupermarketTycoon.Editor
                     "shelf.premium",
                     "Premium Shelf",
                     BuildingType.Shelf,
-                    ShelfPrefabPath,
+                    PremiumShelfPrefabPath,
                     350,
                     4,
                     2,
@@ -509,9 +517,12 @@ namespace SupermarketTycoon.Editor
             return definition;
         }
 
-        private static void CreateShelfPrefab()
+        private static void CreateShelfPrefab(
+            ProductDefinition[] products,
+            string prefabPath,
+            bool premium)
         {
-            var root = new GameObject("ShelfBuilding");
+            var root = new GameObject(premium ? "PremiumShelfBuilding" : "ShelfBuilding");
             try
             {
                 var source = AddNestedVisual(root.transform, SourceShelfPath, "Shelf Visual");
@@ -520,14 +531,28 @@ namespace SupermarketTycoon.Editor
                     CreateFallbackPrimitive(root.transform, PrimitiveType.Cube, "Shelf Visual", new Vector3(2.8f, 1.8f, 0.8f), StoreGreen);
                 }
 
+                if (premium)
+                {
+                    var accent = CreateFallbackPrimitive(
+                        root.transform,
+                        PrimitiveType.Cube,
+                        "Premium Display Base",
+                        new Vector3(3.45f, 0.12f, 1.08f),
+                        AccentYellow);
+                    accent.transform.localPosition = new Vector3(0f, 0.07f, 0f);
+                    UnityEngine.Object.DestroyImmediate(accent.GetComponent<Collider>());
+                }
+
+                var stock = CreateShelfStock(root.transform, products, premium);
+
                 var point = new GameObject("InteractionPoint").transform;
                 point.SetParent(root.transform, false);
                 point.localPosition = new Vector3(0f, 0f, -1.35f);
                 var station = root.AddComponent<ShelfStation>();
-                station.Configure(point, 2.25f);
+                station.Configure(point, premium ? 2f : 2.25f, stock);
                 root.AddComponent<BuildingUpgradeFeedback>();
                 AddPurchaseFx(root.transform);
-                PrefabUtility.SaveAsPrefabAsset(root, ShelfPrefabPath);
+                PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
             }
             finally
             {
@@ -566,7 +591,7 @@ namespace SupermarketTycoon.Editor
             }
         }
 
-        private static void CreateCustomerPrefab()
+        private static void CreateCustomerPrefab(ProductDefinition[] products)
         {
             var root = new GameObject("Customer");
             try
@@ -606,8 +631,9 @@ namespace SupermarketTycoon.Editor
                 }
 
                 visualSelector.Configure(variants);
+                var carryView = CreateProductCarryView(root.transform, products);
                 var customer = root.AddComponent<CustomerAgent>();
-                customer.Configure(navigation, visualSelector);
+                customer.Configure(navigation, visualSelector, carryView);
 
                 PrefabUtility.SaveAsPrefabAsset(root, CustomerPrefabPath);
             }

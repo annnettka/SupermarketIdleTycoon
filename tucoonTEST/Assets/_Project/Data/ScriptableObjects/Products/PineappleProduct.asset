@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 820b21ec46e484640ab313d1abcd81cf, type: 3}
+  m_Name: PineappleProduct
+  m_EditorClassIdentifier: SupermarketTycoon.Runtime::SupermarketTycoon.Products.ProductDefinition
+  id: product.pineapple
+  displayName: Pineapple
+  visualPrefab: {fileID: 1253326079469827574, guid: 0396448344a616044a73ad0b68d93c8c, type: 3}
+  category: 6
+  baseValue: 20
+  valueMultiplier: 1.4
+  requiredStoreLevel: 4
+  premium: 1

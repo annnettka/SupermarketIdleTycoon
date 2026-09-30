@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 820b21ec46e484640ab313d1abcd81cf, type: 3}
+  m_Name: CarrotProduct
+  m_EditorClassIdentifier: SupermarketTycoon.Runtime::SupermarketTycoon.Products.ProductDefinition
+  id: product.carrot
+  displayName: Carrot
+  visualPrefab: {fileID: 2363855059020786052, guid: 3827cf64244286342a781534f24e6c72, type: 3}
+  category: 1
+  baseValue: 11
+  valueMultiplier: 1.05
+  requiredStoreLevel: 1
+  premium: 0

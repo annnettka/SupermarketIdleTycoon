@@ -174,17 +174,40 @@ namespace SupermarketTycoon.Editor
 
             var lockedVisual = new GameObject("Locked Area");
             lockedVisual.transform.SetParent(root.transform, false);
+            var blockedFloor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            blockedFloor.name = "Closed Expansion Floor";
+            blockedFloor.transform.SetParent(lockedVisual.transform, false);
+            blockedFloor.transform.position = new Vector3(0f, 0.04f, 6.05f);
+            blockedFloor.transform.localScale = new Vector3(19f, 0.06f, 5.2f);
+            blockedFloor.GetComponent<Renderer>().sharedMaterial = GetOrCreateMaterial(
+                "ClosedExpansion",
+                new Color(0.34f, 0.38f, 0.38f));
+            UnityEngine.Object.DestroyImmediate(blockedFloor.GetComponent<Collider>());
+
             var barrier = GameObject.CreatePrimitive(PrimitiveType.Cube);
             barrier.name = "Expansion Barrier";
             barrier.transform.SetParent(lockedVisual.transform, false);
-            barrier.transform.position = new Vector3(0f, 0.75f, 2.55f);
-            barrier.transform.localScale = new Vector3(11.5f, 1.5f, 0.25f);
+            barrier.transform.position = new Vector3(0f, 0.7f, 3.45f);
+            barrier.transform.localScale = new Vector3(19f, 1.4f, 0.22f);
             barrier.GetComponent<Renderer>().sharedMaterial = GetOrCreateMaterial("ExpansionBarrier", AccentYellow);
             UnityEngine.Object.DestroyImmediate(barrier.GetComponent<Collider>());
             var obstacle = barrier.AddComponent<NavMeshObstacle>();
             obstacle.shape = NavMeshObstacleShape.Box;
             obstacle.size = Vector3.one;
             obstacle.carving = true;
+
+            var comingSoon = new GameObject("Expansion Sign");
+            comingSoon.transform.SetParent(lockedVisual.transform, false);
+            comingSoon.transform.position = new Vector3(0f, 1.5f, 3.3f);
+            comingSoon.transform.rotation = Quaternion.identity;
+            var signText = comingSoon.AddComponent<TextMesh>();
+            signText.text = "EXPANSION  |  LEVEL 3";
+            signText.anchor = TextAnchor.MiddleCenter;
+            signText.alignment = TextAlignment.Center;
+            signText.characterSize = 0.14f;
+            signText.fontSize = 40;
+            signText.fontStyle = FontStyle.Bold;
+            signText.color = new Color(0.18f, 0.16f, 0.08f);
 
             var unlockedVisual = new GameObject("Expanded Store Visual");
             unlockedVisual.transform.SetParent(root.transform, false);
@@ -193,8 +216,8 @@ namespace SupermarketTycoon.Editor
                 var trim = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 trim.name = "Expansion Floor Trim";
                 trim.transform.SetParent(unlockedVisual.transform, false);
-                trim.transform.position = new Vector3(i * 5.8f, 0.08f, 4.65f);
-                trim.transform.localScale = new Vector3(0.18f, 0.14f, 4f);
+                trim.transform.position = new Vector3(i * 9.2f, 0.08f, 6.05f);
+                trim.transform.localScale = new Vector3(0.18f, 0.14f, 5.1f);
                 trim.GetComponent<Renderer>().sharedMaterial = GetOrCreateMaterial("StoreGreen", StoreGreen);
                 UnityEngine.Object.DestroyImmediate(trim.GetComponent<Collider>());
             }
@@ -203,7 +226,7 @@ namespace SupermarketTycoon.Editor
 
             var canvasObject = new GameObject("Expansion Prompt", typeof(RectTransform));
             canvasObject.transform.SetParent(root.transform, false);
-            canvasObject.transform.position = new Vector3(0f, 2.1f, 1.8f);
+            canvasObject.transform.position = new Vector3(0f, 2.2f, 2.85f);
             canvasObject.transform.rotation = camera.transform.rotation;
             canvasObject.transform.localScale = Vector3.one * 0.008f;
             var canvas = canvasObject.AddComponent<Canvas>();
@@ -251,8 +274,8 @@ namespace SupermarketTycoon.Editor
             var title = CreateLayoutText(
                 "Title",
                 content.transform,
-                "SUPERMARKET\nTYCOON",
-                70,
+                "SUPERMARKET\nIDLE TYCOON",
+                64,
                 FontStyle.Bold,
                 TextAnchor.MiddleCenter,
                 Color.white);
@@ -262,7 +285,7 @@ namespace SupermarketTycoon.Editor
             var subtitle = CreateLayoutText(
                 "Subtitle",
                 content.transform,
-                "BUILD  |  SERVE  |  GROW",
+                "BUILD  |  UPGRADE  |  AUTOMATE",
                 24,
                 FontStyle.Bold,
                 TextAnchor.MiddleCenter,

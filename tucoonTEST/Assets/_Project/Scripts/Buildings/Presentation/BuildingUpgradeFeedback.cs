@@ -7,13 +7,20 @@ namespace SupermarketTycoon.Buildings
     {
         private Coroutine routine;
 
+        public void PlayReveal()
+        {
+            PlayParticles();
+            if (routine != null)
+            {
+                StopCoroutine(routine);
+            }
+
+            routine = StartCoroutine(Reveal());
+        }
+
         public void Play()
         {
-            var particles = GetComponentsInChildren<ParticleSystem>(true);
-            for (var i = 0; i < particles.Length; i++)
-            {
-                particles[i].Play(true);
-            }
+            PlayParticles();
 
             if (routine != null)
             {
@@ -21,6 +28,34 @@ namespace SupermarketTycoon.Buildings
             }
 
             routine = StartCoroutine(Pulse());
+        }
+
+        private void PlayParticles()
+        {
+            var particles = GetComponentsInChildren<ParticleSystem>(true);
+            for (var i = 0; i < particles.Length; i++)
+            {
+                particles[i].Play(true);
+            }
+        }
+
+        private IEnumerator Reveal()
+        {
+            var targetScale = transform.localScale;
+            var startScale = targetScale * 0.68f;
+            transform.localScale = startScale;
+            var elapsed = 0f;
+            const float duration = 0.32f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                var progress = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
+                transform.localScale = Vector3.LerpUnclamped(startScale, targetScale, progress);
+                yield return null;
+            }
+
+            transform.localScale = targetScale;
+            routine = null;
         }
 
         private IEnumerator Pulse()

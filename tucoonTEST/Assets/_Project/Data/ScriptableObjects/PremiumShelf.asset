@@ -15,7 +15,7 @@ MonoBehaviour:
   id: shelf.premium
   displayName: Premium Shelf
   type: 0
-  prefab: {fileID: 5586953289062961552, guid: b475cbc82892411479a5d657f3017baf, type: 3}
+  prefab: {fileID: 2713323255150495839, guid: 23253049b85f1bc4f9c7fb7a92beee77, type: 3}
   cost: 350
   requiredLevel: 4
   capacity: 2

@@ -111,7 +111,6 @@ namespace SupermarketTycoon.Customers
         public override void Enter()
         {
             Customer.StopMoving();
-            Customer.CaptureShelfValue();
             remaining = (Customer.Shelf != null
                 ? Customer.Shelf.ShoppingDuration
                 : Context.Config.ShoppingDuration) * Context.ShoppingTimeMultiplier;
@@ -122,6 +121,13 @@ namespace SupermarketTycoon.Customers
             remaining -= deltaTime;
             if (remaining > 0f)
             {
+                return;
+            }
+
+            if (!Customer.TryPickupProduct())
+            {
+                Customer.ReleaseShelf();
+                Customer.ChangeState(new CustomerSpawnState(Customer));
                 return;
             }
 
@@ -190,6 +196,7 @@ namespace SupermarketTycoon.Customers
             if (patienceRemaining <= 0f)
             {
                 Customer.LeaveCheckout();
+                Customer.ClearCarriedProduct();
                 Context.CustomerLost?.Invoke(Customer.transform.position);
                 Customer.ChangeState(new CustomerExitState(Customer));
                 return;
@@ -245,6 +252,7 @@ namespace SupermarketTycoon.Customers
             var amount = Context.Economy.AddCustomerIncome(Customer.PaymentMultiplier);
             Context.Progression.AddXp(Context.XpReward);
             Context.PaymentCompleted?.Invoke(Customer.transform.position, amount);
+            Customer.ClearCarriedProduct();
             Customer.CompleteCheckout();
             Customer.ChangeState(new CustomerExitState(Customer));
         }

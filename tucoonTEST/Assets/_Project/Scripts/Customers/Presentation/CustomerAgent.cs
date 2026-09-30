@@ -1,5 +1,6 @@
 using SupermarketTycoon.Buildings;
 using SupermarketTycoon.Checkout;
+using SupermarketTycoon.Products;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -11,6 +12,7 @@ namespace SupermarketTycoon.Customers
     {
         [SerializeField] private NavMeshAgent navigationAgent;
         [SerializeField] private CustomerVisualSelector visualSelector;
+        [SerializeField] private ProductCarryView productCarryView;
 
         private ICustomerState state;
         private bool warnedAboutNavMesh;
@@ -19,6 +21,7 @@ namespace SupermarketTycoon.Customers
         internal ShelfStation Shelf { get; private set; }
         internal CheckoutStation Checkout { get; private set; }
         internal float PaymentMultiplier { get; private set; } = 1f;
+        public ProductDefinition CarriedProduct => productCarryView != null ? productCarryView.ActiveProduct : null;
 
         internal bool HasArrived
         {
@@ -33,10 +36,14 @@ namespace SupermarketTycoon.Customers
             }
         }
 
-        public void Configure(NavMeshAgent agent, CustomerVisualSelector visuals = null)
+        public void Configure(
+            NavMeshAgent agent,
+            CustomerVisualSelector visuals = null,
+            ProductCarryView carryView = null)
         {
             navigationAgent = agent;
             visualSelector = visuals;
+            productCarryView = carryView;
         }
 
         public void Begin(CustomerRuntimeContext runtimeContext)
@@ -46,6 +53,7 @@ namespace SupermarketTycoon.Customers
             Shelf = null;
             Checkout = null;
             PaymentMultiplier = Context.ProfilePaymentMultiplier;
+            productCarryView?.Clear();
 
             navigationAgent.speed = Context.Config.MovementSpeed * Context.MovementSpeedMultiplier;
             navigationAgent.acceleration = Context.Config.Acceleration;
@@ -63,6 +71,7 @@ namespace SupermarketTycoon.Customers
             state = null;
             ReleaseShelf();
             LeaveCheckout();
+            productCarryView?.Clear();
             StopMoving();
             Context = null;
         }
@@ -75,12 +84,14 @@ namespace SupermarketTycoon.Customers
         private void Awake()
         {
             visualSelector ??= GetComponent<CustomerVisualSelector>();
+            productCarryView ??= GetComponent<ProductCarryView>();
         }
 
         private void Reset()
         {
             navigationAgent = GetComponent<NavMeshAgent>();
             visualSelector = GetComponent<CustomerVisualSelector>();
+            productCarryView = GetComponent<ProductCarryView>();
         }
 
         private void Update()
@@ -141,9 +152,21 @@ namespace SupermarketTycoon.Customers
             Shelf = shelf;
         }
 
-        internal void CaptureShelfValue()
+        internal bool TryPickupProduct()
         {
-            PaymentMultiplier = Context.ProfilePaymentMultiplier * (Shelf != null ? Shelf.IncomeMultiplier : 1f);
+            if (Shelf == null || !Shelf.TryTakeProduct(this, out var product) || product == null)
+            {
+                return false;
+            }
+
+            PaymentMultiplier = Context.ProfilePaymentMultiplier * Shelf.IncomeMultiplier * product.ValueMultiplier;
+            productCarryView?.Show(product);
+            return true;
+        }
+
+        internal void ClearCarriedProduct()
+        {
+            productCarryView?.Clear();
         }
 
         internal void ReleaseShelf()

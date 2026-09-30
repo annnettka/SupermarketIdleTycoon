@@ -335,6 +335,7 @@ namespace SupermarketTycoon.Buildings
 
             if (notify)
             {
+                building.GetComponent<BuildingUpgradeFeedback>()?.PlayReveal();
                 audio.Play(GameSound.Build);
                 BuildingBuilt?.Invoke(spot, spot.Definition);
             }

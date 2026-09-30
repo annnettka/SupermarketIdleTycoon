@@ -26,6 +26,7 @@ namespace SupermarketTycoon.Buildings
         public void ShowAvailable(BuildingDefinition definition, bool affordable)
         {
             purchaseRoot.SetActive(true);
+            purchaseRoot.transform.localScale = Vector3.one * 0.007f;
             buildButton.interactable = affordable;
             label.text = $"BUILD {definition.DisplayName.ToUpperInvariant()}\n${definition.Cost}";
         }
@@ -33,6 +34,7 @@ namespace SupermarketTycoon.Buildings
         public void ShowLocked(int requiredLevel)
         {
             purchaseRoot.SetActive(true);
+            purchaseRoot.transform.localScale = Vector3.one * 0.007f;
             buildButton.interactable = false;
             label.text = $"LOCKED\nLEVEL {requiredLevel}";
         }
@@ -40,8 +42,9 @@ namespace SupermarketTycoon.Buildings
         public void ShowBuilt(BuildingDefinition definition, int level)
         {
             purchaseRoot.SetActive(true);
+            purchaseRoot.transform.localScale = Vector3.one * 0.0048f;
             buildButton.interactable = true;
-            label.text = $"{definition.DisplayName.ToUpperInvariant()}  |  LEVEL {level}\nMANAGE";
+            label.text = $"LEVEL {level}\nMANAGE";
         }
     }
 }
