@@ -44,25 +44,43 @@ namespace SupermarketTycoon.Editor
             image.color = new Color(0.035f, 0.09f, 0.1f, 1f);
             var group = root.gameObject.AddComponent<CanvasGroup>();
 
-            CreateText(
-                "Loading Label",
-                root.transform,
-                "LOADING SUPERMARKET...",
-                44,
+            var content = CreateUiObject("Loading Content", root.transform);
+            SetRect(
+                content.rectTransform,
+                new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f),
+                Vector2.zero,
+                new Vector2(720f, 260f));
+            ConfigureVerticalLayout(content.gameObject, new RectOffset(40, 40, 20, 20), 12f, TextAnchor.MiddleCenter);
+
+            var title = CreateLayoutText(
+                "Game Title",
+                content.transform,
+                "SUPERMARKET TYCOON",
+                38,
                 FontStyle.Bold,
                 TextAnchor.MiddleCenter,
-                Color.white,
-                new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f),
-                new Vector2(0f, 70f),
-                new Vector2(850f, 80f));
+                AccentYellow);
+            SetLayout(title.gameObject, 0f, 70f, 1f);
+
+            var loadingLabel = CreateLayoutText(
+                "Loading Label",
+                content.transform,
+                "LOADING...",
+                27,
+                FontStyle.Bold,
+                TextAnchor.MiddleCenter,
+                Color.white);
+            SetLayout(loadingLabel.gameObject, 0f, 48f, 1f);
 
             var slider = CreateSlider(
                 "Loading Progress",
-                root.transform,
+                content.transform,
                 new Vector2(0.5f, 0.5f),
-                new Vector2(0f, -15f),
-                new Vector2(620f, 28f));
+                Vector2.zero,
+                new Vector2(560f, 30f));
+            SetLayout(slider.gameObject, 560f, 32f, 0f);
             slider.interactable = false;
 
             var view = root.gameObject.AddComponent<LoadingScreenView>();
@@ -129,16 +147,16 @@ namespace SupermarketTycoon.Editor
             canvas.sortingOrder = 20;
             canvasObject.AddComponent<GraphicRaycaster>();
             var canvasRect = canvasObject.GetComponent<RectTransform>();
-            canvasRect.sizeDelta = new Vector2(330f, 125f);
+            canvasRect.sizeDelta = new Vector2(350f, 124f);
 
             var button = CreateButton(
                 "Build Button",
                 canvasObject.transform,
                 "+ BUILD",
-                26,
+                24,
                 new Vector2(0.5f, 0.5f),
                 Vector2.zero,
-                new Vector2(320f, 116f));
+                new Vector2(340f, 114f));
             var label = button.GetComponentInChildren<Text>();
             var view = canvasObject.AddComponent<BuildSpotView>();
             view.Configure(button, label, canvasObject);
@@ -192,15 +210,15 @@ namespace SupermarketTycoon.Editor
             canvas.renderMode = RenderMode.WorldSpace;
             canvas.sortingOrder = 21;
             canvasObject.AddComponent<GraphicRaycaster>();
-            canvasObject.GetComponent<RectTransform>().sizeDelta = new Vector2(460f, 140f);
+            canvasObject.GetComponent<RectTransform>().sizeDelta = new Vector2(430f, 124f);
             var purchase = CreateButton(
                 "Expansion Button",
                 canvasObject.transform,
                 "LOCKED AREA",
-                25,
+                23,
                 new Vector2(0.5f, 0.5f),
                 Vector2.zero,
-                new Vector2(450f, 132f));
+                new Vector2(420f, 114f));
             var label = purchase.GetComponentInChildren<Text>();
 
             var spot = root.AddComponent<StoreExpansionSpot>();
@@ -220,36 +238,45 @@ namespace SupermarketTycoon.Editor
             var menuRoot = CreateUiObject("Main Menu", canvas);
             Stretch(menuRoot.rectTransform);
 
-            CreateText(
+            var content = CreateUiObject("Menu Content", menuRoot.transform);
+            SetRect(
+                content.rectTransform,
+                new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f),
+                new Vector2(0f, -18f),
+                new Vector2(520f, 760f));
+            ConfigureVerticalLayout(content.gameObject, new RectOffset(45, 45, 20, 20), 16f, TextAnchor.MiddleCenter);
+
+            var title = CreateLayoutText(
                 "Title",
-                menuRoot.transform,
+                content.transform,
                 "SUPERMARKET\nTYCOON",
-                74,
+                70,
                 FontStyle.Bold,
                 TextAnchor.MiddleCenter,
-                Color.white,
-                new Vector2(0.5f, 0.82f),
-                new Vector2(0.5f, 0.82f),
-                Vector2.zero,
-                new Vector2(900f, 190f));
+                Color.white);
+            title.lineSpacing = 0.86f;
+            SetLayout(title.gameObject, 0f, 190f, 1f);
 
-            var subtitle = CreateText(
+            var subtitle = CreateLayoutText(
                 "Subtitle",
-                menuRoot.transform,
+                content.transform,
                 "BUILD  |  SERVE  |  GROW",
-                26,
+                24,
                 FontStyle.Bold,
                 TextAnchor.MiddleCenter,
-                AccentYellow,
-                new Vector2(0.5f, 0.68f),
-                new Vector2(0.5f, 0.68f),
-                Vector2.zero,
-                new Vector2(700f, 55f));
-            subtitle.horizontalOverflow = HorizontalWrapMode.Overflow;
+                AccentYellow);
+            SetLayout(subtitle.gameObject, 0f, 52f, 1f);
 
-            var play = CreateButton("Play", menuRoot.transform, "PLAY", 34, new Vector2(0.5f, 0.48f), Vector2.zero, new Vector2(420f, 112f));
-            var settings = CreateButton("Settings", menuRoot.transform, "SETTINGS", 28, new Vector2(0.5f, 0.35f), Vector2.zero, new Vector2(350f, 92f));
-            var quit = CreateButton("Quit", menuRoot.transform, "QUIT", 26, new Vector2(0.5f, 0.24f), Vector2.zero, new Vector2(300f, 82f));
+            CreateLayoutSpacer("Menu Spacer", content.transform, 76f);
+
+            var play = CreateButton("Play", content.transform, "PLAY", 32, Vector2.one * 0.5f, Vector2.zero, new Vector2(390f, 88f));
+            var settings = CreateButton("Settings", content.transform, "SETTINGS", 28, Vector2.one * 0.5f, Vector2.zero, new Vector2(390f, 82f));
+            var quit = CreateButton("Quit", content.transform, "QUIT", 26, Vector2.one * 0.5f, Vector2.zero, new Vector2(390f, 78f));
+            SetLayout(play.gameObject, 390f, 88f, 0f);
+            SetLayout(settings.gameObject, 390f, 82f, 0f);
+            SetLayout(quit.gameObject, 390f, 78f, 0f);
 
             mainMenuView = menuRoot.gameObject.AddComponent<MainMenuView>();
             mainMenuView.Configure(
@@ -276,38 +303,54 @@ namespace SupermarketTycoon.Editor
             Stretch(hud.rectTransform);
 
             var topBar = CreateUiObject("Top Bar", hud.transform);
-            SetRect(topBar.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -8f), new Vector2(-30f, 118f));
+            SetRect(topBar.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(-64f, 128f));
             var topImage = topBar.gameObject.AddComponent<Image>();
             topImage.color = new Color(0.025f, 0.13f, 0.14f, 0.94f);
+            ConfigureHorizontalLayout(topBar.gameObject, new RectOffset(22, 22, 12, 12), 18f, TextAnchor.MiddleCenter, true);
 
-            var coin = CreateUiObject("Coin", topBar.transform);
-            SetRect(coin.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(28f, 0f), new Vector2(70f, 70f));
+            var leftGroup = CreateUiObject("Left HUD", topBar.transform);
+            SetLayout(leftGroup.gameObject, 360f, 0f, 1f, 1f, 300f, 0f);
+            ConfigureHorizontalLayout(leftGroup.gameObject, new RectOffset(0, 0, 0, 0), 14f, TextAnchor.MiddleLeft, false);
+
+            var coin = CreateUiObject("Coin", leftGroup.transform);
             var coinImage = coin.gameObject.AddComponent<Image>();
             coinImage.sprite = LoadSprite(CoinSpritePath);
             coinImage.color = coinImage.sprite != null ? Color.white : AccentYellow;
+            coinImage.preserveAspect = true;
+            SetLayout(coin.gameObject, 58f, 58f, 0f);
 
-            var money = CreateText("Money", topBar.transform, "$150", 40, FontStyle.Bold, TextAnchor.MiddleLeft, Color.white,
-                new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(105f, 0f), new Vector2(260f, 76f));
-            var level = CreateText("Level", topBar.transform, "LEVEL 1", 30, FontStyle.Bold, TextAnchor.MiddleCenter, AccentYellow,
-                new Vector2(0.5f, 0.7f), new Vector2(0.5f, 0.7f), new Vector2(0f, 0f), new Vector2(300f, 48f));
-            var xp = CreateSlider("XP Bar", topBar.transform, new Vector2(0.5f, 0.34f), Vector2.zero, new Vector2(420f, 24f));
+            var money = CreateLayoutText("Money", leftGroup.transform, "$150", 38, FontStyle.Bold, TextAnchor.MiddleLeft, Color.white);
+            SetLayout(money.gameObject, 250f, 70f, 1f, 0f, 190f, 0f);
+
+            var centerGroup = CreateUiObject("Center HUD", topBar.transform);
+            SetLayout(centerGroup.gameObject, 520f, 0f, 1f, 1f, 430f, 0f);
+            ConfigureVerticalLayout(centerGroup.gameObject, new RectOffset(26, 26, 0, 0), 2f, TextAnchor.MiddleCenter);
+            var level = CreateLayoutText("Level", centerGroup.transform, "LEVEL 1", 30, FontStyle.Bold, TextAnchor.MiddleCenter, AccentYellow);
+            SetLayout(level.gameObject, 0f, 38f, 1f);
+            var xp = CreateSlider("XP Bar", centerGroup.transform, Vector2.one * 0.5f, Vector2.zero, new Vector2(420f, 22f));
+            SetLayout(xp.gameObject, 420f, 22f, 1f);
             xp.interactable = false;
-            var xpLabel = CreateText("XP Label", topBar.transform, "0 / 100 XP", 17, FontStyle.Bold, TextAnchor.MiddleCenter, Color.white,
-                new Vector2(0.5f, 0.34f), new Vector2(0.5f, 0.34f), new Vector2(0f, -28f), new Vector2(300f, 30f));
-            var customers = CreateText("Customers", topBar.transform, "CUSTOMERS  0", 23, FontStyle.Bold, TextAnchor.MiddleRight, Color.white,
-                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-365f, 0f), new Vector2(260f, 60f));
-            var rating = CreateText("Rating", topBar.transform, "RATING  3.0 / 5", 22, FontStyle.Bold, TextAnchor.MiddleRight, AccentYellow,
-                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-150f, 0f), new Vector2(250f, 60f));
-            var pause = CreateButton("Pause", topBar.transform, "II", 28, new Vector2(1f, 0.5f), new Vector2(-55f, 0f), new Vector2(80f, 76f));
+            var xpLabel = CreateLayoutText("XP Label", centerGroup.transform, "0 / 100 XP", 17, FontStyle.Bold, TextAnchor.MiddleCenter, Color.white);
+            SetLayout(xpLabel.gameObject, 0f, 28f, 1f);
+
+            var rightGroup = CreateUiObject("Right HUD", topBar.transform);
+            SetLayout(rightGroup.gameObject, 520f, 0f, 1f, 1f, 450f, 0f);
+            ConfigureHorizontalLayout(rightGroup.gameObject, new RectOffset(0, 0, 0, 0), 14f, TextAnchor.MiddleRight, true);
+            var customers = CreateLayoutText("Customers", rightGroup.transform, "CUSTOMERS\n0", 21, FontStyle.Bold, TextAnchor.MiddleCenter, Color.white);
+            SetLayout(customers.gameObject, 160f, 74f, 1f, 0f, 135f, 0f);
+            var rating = CreateLayoutText("Rating", rightGroup.transform, "RATING\n3.0 / 5", 21, FontStyle.Bold, TextAnchor.MiddleCenter, AccentYellow);
+            SetLayout(rating.gameObject, 155f, 74f, 1f, 0f, 130f, 0f);
+            var pause = CreateButton("Pause", rightGroup.transform, "II", 27, Vector2.one * 0.5f, Vector2.zero, new Vector2(72f, 72f));
+            SetLayout(pause.gameObject, 72f, 72f, 0f);
 
             var objectiveBand = CreateUiObject("Objective Band", hud.transform);
-            SetRect(objectiveBand.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -126f), new Vector2(760f, 64f));
+            SetRect(objectiveBand.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -162f), new Vector2(700f, 68f));
             objectiveBand.gameObject.AddComponent<Image>().color = new Color(0.96f, 0.99f, 0.97f, 0.94f);
             var objective = CreateText(
                 "Objective",
                 objectiveBand.transform,
-                "GOAL  BUILD A SHELF   0 / 1",
-                22,
+                "CURRENT GOAL  |  BUILD A SHELF  0 / 1",
+                21,
                 FontStyle.Bold,
                 TextAnchor.MiddleCenter,
                 new Color(0.04f, 0.2f, 0.2f),
@@ -356,34 +399,38 @@ namespace SupermarketTycoon.Editor
 
         private static BuildingPanelView CreateBuildingPanel(Transform parent)
         {
-            var panel = CreatePanel("Building Panel", parent, new Vector2(440f, 300f));
-            SetRect(panel, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-24f, 24f), new Vector2(440f, 300f));
-            var title = CreateText("Title", panel, "SHELF", 30, FontStyle.Bold, TextAnchor.MiddleLeft, StoreGreen,
-                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(32f, -42f), new Vector2(270f, 54f));
+            var panel = CreatePanel("Building Management", parent, new Vector2(640f, 300f));
+            SetRect(panel, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 28f), new Vector2(640f, 300f));
+            var group = panel.gameObject.AddComponent<CanvasGroup>();
+            var transition = panel.gameObject.AddComponent<PanelTransition>();
+            transition.Configure(panel.gameObject, group, panel);
+
+            var title = CreateText("Title", panel, "SHELF", 31, FontStyle.Bold, TextAnchor.MiddleLeft, StoreGreen,
+                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(38f, -44f), new Vector2(390f, 54f));
             var level = CreateText("Level", panel, "LEVEL 1", 21, FontStyle.Bold, TextAnchor.MiddleRight, new Color(0.1f, 0.25f, 0.25f),
-                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-70f, -42f), new Vector2(130f, 45f));
+                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-112f, -44f), new Vector2(160f, 45f));
             var primary = CreateText("Primary Stat", panel, "INCOME", 22, FontStyle.Normal, TextAnchor.MiddleLeft, new Color(0.08f, 0.2f, 0.2f),
-                new Vector2(0f, 0.56f), new Vector2(0f, 0.56f), new Vector2(32f, 0f), new Vector2(370f, 42f));
+                new Vector2(0f, 0.57f), new Vector2(0f, 0.57f), new Vector2(38f, 0f), new Vector2(560f, 42f));
             var secondary = CreateText("Secondary Stat", panel, "CAPACITY", 22, FontStyle.Normal, TextAnchor.MiddleLeft, new Color(0.08f, 0.2f, 0.2f),
-                new Vector2(0f, 0.4f), new Vector2(0f, 0.4f), new Vector2(32f, 0f), new Vector2(370f, 42f));
-            var upgrade = CreateButton("Upgrade", panel, "UPGRADE", 23, new Vector2(0.5f, 0.14f), Vector2.zero, new Vector2(300f, 66f));
-            var close = CreateButton("Close", panel, "X", 20, new Vector2(1f, 1f), new Vector2(-24f, -24f), new Vector2(46f, 46f));
+                new Vector2(0f, 0.39f), new Vector2(0f, 0.39f), new Vector2(38f, 0f), new Vector2(560f, 42f));
+            var upgrade = CreateButton("Upgrade", panel, "UPGRADE", 23, new Vector2(0.5f, 0.14f), Vector2.zero, new Vector2(330f, 68f));
+            var close = CreateButton("Close", panel, "X", 20, new Vector2(1f, 1f), new Vector2(-28f, -28f), new Vector2(48f, 48f));
 
             var view = panel.gameObject.AddComponent<BuildingPanelView>();
-            view.Configure(panel.gameObject, title, level, primary, secondary, upgrade, upgrade.GetComponentInChildren<Text>(), close);
+            view.Configure(panel.gameObject, title, level, primary, secondary, upgrade, upgrade.GetComponentInChildren<Text>(), close, transition);
             panel.gameObject.SetActive(false);
             return view;
         }
 
         private static EmployeeView CreateEmployeePanel(Transform parent)
         {
-            var panel = CreatePanel("Employee Panel", parent, new Vector2(390f, 190f));
-            SetRect(panel, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(24f, 24f), new Vector2(390f, 190f));
-            var title = CreateText("Title", panel, "CASHIER", 27, FontStyle.Bold, TextAnchor.MiddleLeft, StoreGreen,
+            var panel = CreatePanel("Employee Panel", parent, new Vector2(360f, 180f));
+            SetRect(panel, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(32f, 28f), new Vector2(360f, 180f));
+            var title = CreateText("Title", panel, "CASHIER", 26, FontStyle.Bold, TextAnchor.MiddleLeft, StoreGreen,
                 new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(28f, -38f), new Vector2(320f, 48f));
-            var status = CreateText("Status", panel, "AVAILABLE AT LEVEL 2", 19, FontStyle.Bold, TextAnchor.MiddleLeft, new Color(0.08f, 0.2f, 0.2f),
-                new Vector2(0f, 0.56f), new Vector2(0f, 0.56f), new Vector2(28f, 0f), new Vector2(330f, 38f));
-            var purchase = CreateButton("Purchase", panel, "REQUIRES LEVEL 2", 20, new Vector2(0.5f, 0.2f), Vector2.zero, new Vector2(310f, 58f));
+            var status = CreateText("Status", panel, "AVAILABLE AT LEVEL 2", 18, FontStyle.Bold, TextAnchor.MiddleLeft, new Color(0.08f, 0.2f, 0.2f),
+                new Vector2(0f, 0.55f), new Vector2(0f, 0.55f), new Vector2(28f, 0f), new Vector2(304f, 38f));
+            var purchase = CreateButton("Purchase", panel, "REQUIRES LEVEL 2", 19, new Vector2(0.5f, 0.19f), Vector2.zero, new Vector2(300f, 56f));
             var view = panel.gameObject.AddComponent<EmployeeView>();
             view.Configure(panel.gameObject, title, status, purchase, purchase.GetComponentInChildren<Text>());
             return view;
@@ -407,16 +454,25 @@ namespace SupermarketTycoon.Editor
         private static PauseMenuView CreatePauseMenu(Transform canvas)
         {
             var root = CreateOverlay("Pause Overlay", canvas, new Color(0.01f, 0.04f, 0.05f, 0.78f));
-            var panel = CreatePanel("Pause Panel", root.transform, new Vector2(520f, 650f));
-            CreateText("Title", panel.transform, "PAUSED", 48, FontStyle.Bold, TextAnchor.MiddleCenter, StoreGreen,
-                new Vector2(0.5f, 0.86f), new Vector2(0.5f, 0.86f), Vector2.zero, new Vector2(420f, 80f));
-            var resume = CreateButton("Resume", panel.transform, "RESUME", 30, new Vector2(0.5f, 0.65f), Vector2.zero, new Vector2(340f, 82f));
-            var stats = CreateButton("Stats", panel.transform, "STATS", 27, new Vector2(0.5f, 0.49f), Vector2.zero, new Vector2(320f, 76f));
-            var settings = CreateButton("Settings", panel.transform, "SETTINGS", 27, new Vector2(0.5f, 0.33f), Vector2.zero, new Vector2(320f, 76f));
-            var mainMenu = CreateButton("Main Menu", panel.transform, "MAIN MENU", 25, new Vector2(0.5f, 0.17f), Vector2.zero, new Vector2(300f, 72f));
+            var rootGroup = root.gameObject.AddComponent<CanvasGroup>();
+            var panel = CreatePanel("Pause Panel", root.transform, new Vector2(520f, 620f));
+            ConfigureVerticalLayout(panel.gameObject, new RectOffset(72, 72, 54, 48), 18f, TextAnchor.MiddleCenter);
+            var title = CreateLayoutText("Title", panel.transform, "PAUSED", 46, FontStyle.Bold, TextAnchor.MiddleCenter, StoreGreen);
+            SetLayout(title.gameObject, 0f, 94f, 1f);
+            CreateLayoutSpacer("Pause Spacer", panel.transform, 22f);
+            var resume = CreateButton("Resume", panel.transform, "RESUME", 29, Vector2.one * 0.5f, Vector2.zero, new Vector2(360f, 78f));
+            var stats = CreateButton("Stats", panel.transform, "STATS", 26, Vector2.one * 0.5f, Vector2.zero, new Vector2(360f, 72f));
+            var settings = CreateButton("Settings", panel.transform, "SETTINGS", 26, Vector2.one * 0.5f, Vector2.zero, new Vector2(360f, 72f));
+            var mainMenu = CreateButton("Main Menu", panel.transform, "MAIN MENU", 24, Vector2.one * 0.5f, Vector2.zero, new Vector2(360f, 68f));
+            SetLayout(resume.gameObject, 360f, 78f, 0f);
+            SetLayout(stats.gameObject, 360f, 72f, 0f);
+            SetLayout(settings.gameObject, 360f, 72f, 0f);
+            SetLayout(mainMenu.gameObject, 360f, 68f, 0f);
+            var transition = root.gameObject.AddComponent<PanelTransition>();
+            transition.Configure(root.gameObject, rootGroup, panel);
 
             var view = root.gameObject.AddComponent<PauseMenuView>();
-            view.Configure(root.gameObject, resume, stats, settings, mainMenu);
+            view.Configure(root.gameObject, resume, stats, settings, mainMenu, transition);
             root.gameObject.SetActive(false);
             return view;
         }
@@ -440,16 +496,27 @@ namespace SupermarketTycoon.Editor
         private static SettingsView CreateSettingsUi(Transform canvas)
         {
             var root = CreateOverlay("Settings Overlay", canvas, new Color(0.01f, 0.04f, 0.05f, 0.82f));
+            var rootGroup = root.gameObject.AddComponent<CanvasGroup>();
             var panel = CreatePanel("Settings Panel", root.transform, new Vector2(720f, 820f));
-            CreateText("Title", panel.transform, "SETTINGS", 46, FontStyle.Bold, TextAnchor.MiddleCenter, StoreGreen,
-                new Vector2(0.5f, 0.89f), new Vector2(0.5f, 0.89f), Vector2.zero, new Vector2(550f, 70f));
+            ConfigureVerticalLayout(panel.gameObject, new RectOffset(64, 64, 42, 36), 13f, TextAnchor.UpperCenter);
 
-            var master = CreateLabeledSlider(panel.transform, "MASTER VOLUME", 0.71f);
-            var music = CreateLabeledSlider(panel.transform, "MUSIC VOLUME", 0.57f);
-            var sfx = CreateLabeledSlider(panel.transform, "SFX VOLUME", 0.43f);
-            var fullscreen = CreateLabeledToggle(panel.transform, "FULLSCREEN", 0.3f);
-            var reset = CreateButton("Reset Progress", panel.transform, "RESET PROGRESS", 22, new Vector2(0.5f, 0.17f), Vector2.zero, new Vector2(310f, 70f));
-            var back = CreateButton("Back", panel.transform, "BACK", 25, new Vector2(0.5f, 0.07f), Vector2.zero, new Vector2(250f, 64f));
+            var title = CreateLayoutText("Title", panel.transform, "SETTINGS", 44, FontStyle.Bold, TextAnchor.MiddleCenter, StoreGreen);
+            SetLayout(title.gameObject, 0f, 82f, 1f);
+            CreateLayoutSpacer("Header Spacer", panel.transform, 10f);
+
+            var master = CreateSettingsSliderRow(panel.transform, "MASTER VOLUME");
+            var music = CreateSettingsSliderRow(panel.transform, "MUSIC VOLUME");
+            var sfx = CreateSettingsSliderRow(panel.transform, "SFX VOLUME");
+            var fullscreen = CreateSettingsToggleRow(panel.transform, "FULLSCREEN");
+            CreateLayoutSpacer("Footer Spacer", panel.transform, 14f);
+
+            var footer = CreateUiObject("Footer", panel.transform);
+            SetLayout(footer.gameObject, 0f, 140f, 1f);
+            ConfigureVerticalLayout(footer.gameObject, new RectOffset(0, 0, 0, 0), 12f, TextAnchor.MiddleCenter, false);
+            var reset = CreateButton("Reset Progress", footer.transform, "RESET PROGRESS", 20, Vector2.one * 0.5f, Vector2.zero, new Vector2(280f, 58f));
+            var back = CreateButton("Back", footer.transform, "BACK", 25, Vector2.one * 0.5f, Vector2.zero, new Vector2(340f, 68f));
+            SetLayout(reset.gameObject, 280f, 58f, 0f);
+            SetLayout(back.gameObject, 340f, 68f, 0f);
 
             var confirmation = CreateOverlay("Reset Confirmation", root.transform, new Color(0.01f, 0.04f, 0.05f, 0.88f));
             var confirmPanel = CreatePanel("Confirm Panel", confirmation.transform, new Vector2(560f, 360f));
@@ -459,28 +526,59 @@ namespace SupermarketTycoon.Editor
             var cancel = CreateButton("Cancel", confirmPanel.transform, "CANCEL", 24, new Vector2(0.66f, 0.25f), Vector2.zero, new Vector2(200f, 66f));
             confirmation.gameObject.SetActive(false);
 
+            var transition = root.gameObject.AddComponent<PanelTransition>();
+            transition.Configure(root.gameObject, rootGroup, panel);
+
             var view = root.gameObject.AddComponent<SettingsView>();
-            view.Configure(root.gameObject, master, music, sfx, fullscreen, back, reset, confirmation.gameObject, confirm, cancel);
+            view.Configure(root.gameObject, master, music, sfx, fullscreen, back, reset, confirmation.gameObject, confirm, cancel, transition);
             root.gameObject.SetActive(false);
             return view;
         }
 
-        private static Slider CreateLabeledSlider(Transform parent, string label, float anchorY)
+        private static Slider CreateSettingsSliderRow(Transform parent, string label)
         {
-            CreateText(label + " Label", parent, label, 22, FontStyle.Bold, TextAnchor.MiddleLeft, new Color(0.08f, 0.18f, 0.18f),
-                new Vector2(0.16f, anchorY), new Vector2(0.16f, anchorY), Vector2.zero, new Vector2(250f, 45f));
-            return CreateSlider(label, parent, new Vector2(0.68f, anchorY), Vector2.zero, new Vector2(330f, 30f));
+            var row = CreateUiObject(label + " Row", parent);
+            SetLayout(row.gameObject, 0f, 68f, 1f);
+            ConfigureHorizontalLayout(row.gameObject, new RectOffset(0, 0, 7, 7), 24f, TextAnchor.MiddleLeft, false);
+
+            var rowLabel = CreateLayoutText(
+                label + " Label",
+                row.transform,
+                label,
+                21,
+                FontStyle.Bold,
+                TextAnchor.MiddleLeft,
+                new Color(0.08f, 0.18f, 0.18f));
+            SetLayout(rowLabel.gameObject, 220f, 48f, 0f);
+
+            var slider = CreateSlider(label, row.transform, Vector2.one * 0.5f, Vector2.zero, new Vector2(330f, 32f));
+            SetLayout(slider.gameObject, 330f, 34f, 1f);
+            return slider;
         }
 
-        private static Toggle CreateLabeledToggle(Transform parent, string label, float anchorY)
+        private static Toggle CreateSettingsToggleRow(Transform parent, string label)
         {
-            CreateText(label + " Label", parent, label, 22, FontStyle.Bold, TextAnchor.MiddleLeft, new Color(0.08f, 0.18f, 0.18f),
-                new Vector2(0.16f, anchorY), new Vector2(0.16f, anchorY), Vector2.zero, new Vector2(250f, 45f));
+            var row = CreateUiObject(label + " Row", parent);
+            SetLayout(row.gameObject, 0f, 68f, 1f);
+            ConfigureHorizontalLayout(row.gameObject, new RectOffset(0, 0, 5, 5), 24f, TextAnchor.MiddleLeft, false);
 
-            var root = CreateUiObject(label, parent);
-            SetRect(root.rectTransform, new Vector2(0.75f, anchorY), new Vector2(0.75f, anchorY), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(58f, 58f));
+            var rowLabel = CreateLayoutText(
+                label + " Label",
+                row.transform,
+                label,
+                21,
+                FontStyle.Bold,
+                TextAnchor.MiddleLeft,
+                new Color(0.08f, 0.18f, 0.18f));
+            SetLayout(rowLabel.gameObject, 220f, 48f, 0f);
+
+            var spacer = CreateUiObject("Control Spacer", row.transform);
+            SetLayout(spacer.gameObject, 0f, 1f, 1f);
+
+            var root = CreateUiObject(label, row.transform);
             var background = root.gameObject.AddComponent<Image>();
             background.color = new Color(0.82f, 0.88f, 0.86f);
+            SetLayout(root.gameObject, 54f, 54f, 0f);
 
             var check = CreateUiObject("Checkmark", root.transform);
             Stretch(check.rectTransform, new Vector2(9f, 9f), new Vector2(-9f, -9f));
@@ -549,12 +647,103 @@ namespace SupermarketTycoon.Editor
                 highlightedSprite = LoadSprite(ButtonHoverSpritePath),
                 pressedSprite = LoadSprite(ButtonPressedSpritePath),
                 selectedSprite = LoadSprite(ButtonHoverSpritePath),
-                disabledSprite = null
+                disabledSprite = LoadSprite(ButtonPressedSpritePath)
             };
 
             CreateText("Label", root.transform, label, fontSize, FontStyle.Bold, TextAnchor.MiddleCenter, Color.white,
                 Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, true);
             return button;
+        }
+
+        private static Text CreateLayoutText(
+            string name,
+            Transform parent,
+            string value,
+            int fontSize,
+            FontStyle style,
+            TextAnchor alignment,
+            Color color)
+        {
+            var root = CreateUiObject(name, parent);
+            var text = root.gameObject.AddComponent<Text>();
+            text.text = value;
+            text.font = GetFont();
+            text.fontSize = fontSize;
+            text.fontStyle = style;
+            text.alignment = alignment;
+            text.color = color;
+            text.raycastTarget = false;
+            text.resizeTextForBestFit = true;
+            text.resizeTextMinSize = Mathf.Max(12, fontSize / 2);
+            text.resizeTextMaxSize = fontSize;
+            return text;
+        }
+
+        private static void CreateLayoutSpacer(string name, Transform parent, float height)
+        {
+            var spacer = CreateUiObject(name, parent);
+            SetLayout(spacer.gameObject, 0f, height, 1f);
+        }
+
+        private static void ConfigureHorizontalLayout(
+            GameObject target,
+            RectOffset padding,
+            float spacing,
+            TextAnchor alignment,
+            bool forceExpandWidth)
+        {
+            var layout = target.AddComponent<HorizontalLayoutGroup>();
+            layout.padding = padding;
+            layout.spacing = spacing;
+            layout.childAlignment = alignment;
+            layout.childControlWidth = true;
+            layout.childControlHeight = true;
+            layout.childForceExpandWidth = forceExpandWidth;
+            layout.childForceExpandHeight = false;
+        }
+
+        private static void ConfigureVerticalLayout(
+            GameObject target,
+            RectOffset padding,
+            float spacing,
+            TextAnchor alignment,
+            bool forceExpandWidth = true)
+        {
+            var layout = target.AddComponent<VerticalLayoutGroup>();
+            layout.padding = padding;
+            layout.spacing = spacing;
+            layout.childAlignment = alignment;
+            layout.childControlWidth = true;
+            layout.childControlHeight = true;
+            layout.childForceExpandWidth = forceExpandWidth;
+            layout.childForceExpandHeight = false;
+        }
+
+        private static LayoutElement SetLayout(
+            GameObject target,
+            float preferredWidth,
+            float preferredHeight,
+            float flexibleWidth = 0f,
+            float flexibleHeight = 0f,
+            float minWidth = -1f,
+            float minHeight = -1f)
+        {
+            var element = target.GetComponent<LayoutElement>() ?? target.AddComponent<LayoutElement>();
+            element.preferredWidth = preferredWidth;
+            element.preferredHeight = preferredHeight;
+            element.flexibleWidth = flexibleWidth;
+            element.flexibleHeight = flexibleHeight;
+            if (minWidth >= 0f)
+            {
+                element.minWidth = minWidth;
+            }
+
+            if (minHeight >= 0f)
+            {
+                element.minHeight = minHeight;
+            }
+
+            return element;
         }
 
         private static Text CreateText(

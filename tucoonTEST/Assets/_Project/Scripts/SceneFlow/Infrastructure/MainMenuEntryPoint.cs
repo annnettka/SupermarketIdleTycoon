@@ -22,6 +22,7 @@ namespace SupermarketTycoon.SceneFlow
         public override void Initialize(ApplicationContext context)
         {
             applicationContext = context;
+            context.Audio.PlayMenuMusic();
             settingsController = new SettingsController(settingsView, context, ResetProgress);
             mainMenuController = new MainMenuController(mainMenuView, context, settingsController);
         }

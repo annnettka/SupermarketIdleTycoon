@@ -13,6 +13,7 @@ namespace SupermarketTycoon.UI
         [SerializeField] private Button upgradeButton;
         [SerializeField] private Text upgradeButtonLabel;
         [SerializeField] private Button closeButton;
+        [SerializeField] private PanelTransition transition;
 
         public Button UpgradeButton => upgradeButton;
         public Button CloseButton => closeButton;
@@ -25,7 +26,8 @@ namespace SupermarketTycoon.UI
             Text secondaryStat,
             Button upgrade,
             Text upgradeLabel,
-            Button close)
+            Button close,
+            PanelTransition panelTransition)
         {
             root = panelRoot;
             titleLabel = title;
@@ -35,11 +37,19 @@ namespace SupermarketTycoon.UI
             upgradeButton = upgrade;
             upgradeButtonLabel = upgradeLabel;
             closeButton = close;
+            transition = panelTransition;
         }
 
         public void SetVisible(bool visible)
         {
-            root.SetActive(visible);
+            if (transition != null)
+            {
+                transition.SetVisible(visible);
+            }
+            else
+            {
+                root.SetActive(visible);
+            }
         }
 
         public void Show(

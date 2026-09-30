@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -56,7 +57,7 @@ namespace SupermarketTycoon.UI
 
         public void SetMoney(int money)
         {
-            moneyLabel.text = $"${money}";
+            moneyLabel.text = "$" + money.ToString("N0", CultureInfo.InvariantCulture);
         }
 
         public void SetProgression(int level, int xp, int requiredXp)
@@ -69,19 +70,19 @@ namespace SupermarketTycoon.UI
 
         public void SetCustomers(int count)
         {
-            customerLabel.text = $"CUSTOMERS  {count}";
+            customerLabel.text = $"CUSTOMERS\n{count}";
         }
 
         public void SetRating(float rating)
         {
-            ratingLabel.text = $"RATING  {rating:0.0} / 5";
+            ratingLabel.text = $"RATING\n{rating:0.0} / 5";
         }
 
         public void SetObjective(string title, string progress, bool sequenceComplete)
         {
             objectiveLabel.text = sequenceComplete
-                ? "GOAL  STORE ESTABLISHED"
-                : $"GOAL  {title.ToUpperInvariant()}   {progress}";
+                ? "CURRENT GOAL  |  STORE ESTABLISHED"
+                : $"CURRENT GOAL  |  {title.ToUpperInvariant()}  {progress}";
         }
 
         public void ShowIncome(int amount)

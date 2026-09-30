@@ -119,5 +119,28 @@ namespace SupermarketTycoon.Tests
                 Directory.Delete(directory, true);
             }
         }
+
+        [Test]
+        public void SettingsLoad_MissingMusicFieldKeepsNonZeroDefault()
+        {
+            var directory = Path.Combine(Path.GetTempPath(), "supermarket-settings-test-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(directory, "supermarket-settings.json"),
+                    "{\"MasterVolume\":0.8,\"SfxVolume\":0.4,\"Fullscreen\":false}");
+
+                var loaded = new SettingsRepository(directory).Load();
+
+                Assert.That(loaded.MasterVolume, Is.EqualTo(0.8f).Within(0.001f));
+                Assert.That(loaded.MusicVolume, Is.EqualTo(0.75f).Within(0.001f));
+                Assert.That(loaded.SfxVolume, Is.EqualTo(0.4f).Within(0.001f));
+            }
+            finally
+            {
+                Directory.Delete(directory, true);
+            }
+        }
     }
 }

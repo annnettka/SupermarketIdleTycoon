@@ -10,24 +10,39 @@ namespace SupermarketTycoon.UI
         [SerializeField] private Button statsButton;
         [SerializeField] private Button settingsButton;
         [SerializeField] private Button mainMenuButton;
+        [SerializeField] private PanelTransition transition;
 
         public Button ResumeButton => resumeButton;
         public Button StatsButton => statsButton;
         public Button SettingsButton => settingsButton;
         public Button MainMenuButton => mainMenuButton;
 
-        public void Configure(GameObject menuRoot, Button resume, Button stats, Button settings, Button mainMenu)
+        public void Configure(
+            GameObject menuRoot,
+            Button resume,
+            Button stats,
+            Button settings,
+            Button mainMenu,
+            PanelTransition panelTransition)
         {
             root = menuRoot;
             resumeButton = resume;
             statsButton = stats;
             settingsButton = settings;
             mainMenuButton = mainMenu;
+            transition = panelTransition;
         }
 
         public void SetVisible(bool visible)
         {
-            root.SetActive(visible);
+            if (transition != null)
+            {
+                transition.SetVisible(visible);
+            }
+            else
+            {
+                root.SetActive(visible);
+            }
         }
     }
 }

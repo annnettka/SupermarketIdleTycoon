@@ -15,6 +15,7 @@ namespace SupermarketTycoon.UI
         [SerializeField] private GameObject resetConfirmation;
         [SerializeField] private Button confirmResetButton;
         [SerializeField] private Button cancelResetButton;
+        [SerializeField] private PanelTransition transition;
 
         public Slider MasterVolume => masterVolume;
         public Slider MusicVolume => musicVolume;
@@ -35,7 +36,8 @@ namespace SupermarketTycoon.UI
             Button reset,
             GameObject confirmation,
             Button confirm,
-            Button cancel)
+            Button cancel,
+            PanelTransition panelTransition)
         {
             root = settingsRoot;
             masterVolume = master;
@@ -47,11 +49,19 @@ namespace SupermarketTycoon.UI
             resetConfirmation = confirmation;
             confirmResetButton = confirm;
             cancelResetButton = cancel;
+            transition = panelTransition;
         }
 
         public void SetVisible(bool visible)
         {
-            root.SetActive(visible);
+            if (transition != null)
+            {
+                transition.SetVisible(visible);
+            }
+            else
+            {
+                root.SetActive(visible);
+            }
             if (!visible)
             {
                 ShowResetConfirmation(false);

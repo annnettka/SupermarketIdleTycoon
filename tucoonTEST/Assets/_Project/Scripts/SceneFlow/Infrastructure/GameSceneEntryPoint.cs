@@ -108,6 +108,7 @@ namespace SupermarketTycoon.SceneFlow
             }
 
             applicationContext = context;
+            context.Audio.PlayGameplayMusic();
             var saveData = context.SaveRepository.LoadOrCreate(gameConfig);
             var wallet = new Wallet(saveData.Money);
             progression = new ProgressionService(progressionConfig, saveData.CurrentLevel, saveData.CurrentXp);
@@ -209,7 +210,9 @@ namespace SupermarketTycoon.SceneFlow
                 upgrades,
                 wallet,
                 progression,
-                gameConfig.CustomerPayment);
+                gameConfig.CustomerPayment,
+                pause,
+                context.Audio);
             employeeController = new EmployeeController(employeeView, employees, wallet, progression);
             offlineController = new OfflineIncomeController(offlineIncomeView, offline);
 

@@ -104,8 +104,8 @@ namespace SupermarketTycoon.Expansion
             var levelLocked = progression.CurrentLevel < definition.RequiredLevel;
             purchaseButton.interactable = !levelLocked && service.CanAfford(definition);
             label.text = levelLocked
-                ? $"LOCKED AREA\nREQUIRES LEVEL {definition.RequiredLevel}"
-                : $"UNLOCK STORE EXPANSION\n${definition.Cost}";
+                ? $"STORE EXPANSION\nREQUIRES LEVEL {definition.RequiredLevel}"
+                : $"BUILD EXPANSION\n${definition.Cost}";
         }
     }
 }

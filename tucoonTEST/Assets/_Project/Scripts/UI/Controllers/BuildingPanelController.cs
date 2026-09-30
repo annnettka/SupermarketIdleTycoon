@@ -1,5 +1,7 @@
 using System;
+using SupermarketTycoon.Audio;
 using SupermarketTycoon.Buildings;
+using SupermarketTycoon.Core;
 using SupermarketTycoon.Economy;
 using SupermarketTycoon.Progression;
 using UnityEngine;
@@ -14,6 +16,8 @@ namespace SupermarketTycoon.UI
         private readonly IWallet wallet;
         private readonly ProgressionService progression;
         private readonly int baseCustomerPayment;
+        private readonly PauseService pause;
+        private readonly AudioService audio;
         private BuildSpot selected;
 
         public BuildingPanelController(
@@ -22,7 +26,9 @@ namespace SupermarketTycoon.UI
             BuildingUpgradeService upgrades,
             IWallet wallet,
             ProgressionService progression,
-            int baseCustomerPayment)
+            int baseCustomerPayment,
+            PauseService pauseService,
+            AudioService audioService)
         {
             this.view = view ?? throw new ArgumentNullException(nameof(view));
             this.buildings = buildings ?? throw new ArgumentNullException(nameof(buildings));
@@ -30,13 +36,16 @@ namespace SupermarketTycoon.UI
             this.wallet = wallet ?? throw new ArgumentNullException(nameof(wallet));
             this.progression = progression ?? throw new ArgumentNullException(nameof(progression));
             this.baseCustomerPayment = Math.Max(1, baseCustomerPayment);
+            pause = pauseService ?? throw new ArgumentNullException(nameof(pauseService));
+            audio = audioService ?? throw new ArgumentNullException(nameof(audioService));
 
             buildings.BuildingSelected += Select;
             buildings.BuildingLevelChanged += OnBuildingLevelChanged;
             wallet.BalanceChanged += OnBalanceChanged;
             progression.LevelChanged += OnPlayerLevelChanged;
             view.UpgradeButton.onClick.AddListener(OnUpgradeClicked);
-            view.CloseButton.onClick.AddListener(Close);
+            pause.PauseChanged += OnPauseChanged;
+            view.CloseButton.onClick.AddListener(OnCloseClicked);
             view.SetVisible(false);
         }
 
@@ -47,20 +56,35 @@ namespace SupermarketTycoon.UI
             wallet.BalanceChanged -= OnBalanceChanged;
             progression.LevelChanged -= OnPlayerLevelChanged;
             view.UpgradeButton.onClick.RemoveListener(OnUpgradeClicked);
-            view.CloseButton.onClick.RemoveListener(Close);
+            pause.PauseChanged -= OnPauseChanged;
+            view.CloseButton.onClick.RemoveListener(OnCloseClicked);
         }
 
         private void Select(BuildSpot spot)
         {
             selected = spot;
-            view.SetVisible(true);
             Refresh();
+            view.SetVisible(true);
+        }
+
+        private void OnCloseClicked()
+        {
+            audio.Play(GameSound.UiClick);
+            Close();
         }
 
         private void Close()
         {
             selected = null;
             view.SetVisible(false);
+        }
+
+        private void OnPauseChanged(bool isPaused)
+        {
+            if (isPaused)
+            {
+                Close();
+            }
         }
 
         private void OnUpgradeClicked()

@@ -14,6 +14,7 @@ using Unity.AI.Navigation;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.EventSystems;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
@@ -29,17 +30,39 @@ namespace SupermarketTycoon.Editor
                 var root = new GameObject("Application");
                 var bootstrapper = root.AddComponent<AppBootstrapper>();
 
-                var musicSource = root.AddComponent<AudioSource>();
+                var mixer = EnsureAudioMixer();
+                var audioRoot = new GameObject("Audio");
+                audioRoot.transform.SetParent(root.transform, false);
+
+                var musicSource = new GameObject("Music A").AddComponent<AudioSource>();
+                musicSource.transform.SetParent(audioRoot.transform, false);
                 musicSource.playOnAwake = false;
                 musicSource.loop = true;
-                var sfxSource = root.AddComponent<AudioSource>();
+                musicSource.spatialBlend = 0f;
+                musicSource.outputAudioMixerGroup = FindMixerGroup(mixer, "Music");
+
+                var secondaryMusicSource = new GameObject("Music B").AddComponent<AudioSource>();
+                secondaryMusicSource.transform.SetParent(audioRoot.transform, false);
+                secondaryMusicSource.playOnAwake = false;
+                secondaryMusicSource.loop = true;
+                secondaryMusicSource.spatialBlend = 0f;
+                secondaryMusicSource.outputAudioMixerGroup = FindMixerGroup(mixer, "Music");
+
+                var sfxSource = new GameObject("SFX").AddComponent<AudioSource>();
+                sfxSource.transform.SetParent(audioRoot.transform, false);
                 sfxSource.playOnAwake = false;
+                sfxSource.spatialBlend = 0f;
+                sfxSource.outputAudioMixerGroup = FindMixerGroup(mixer, "SFX");
 
                 var loading = CreateLoadingScreen(root.transform);
                 SetReference(bootstrapper, "gameConfig", gameConfig);
                 SetReference(bootstrapper, "loadingScreen", loading);
+                SetReference(bootstrapper, "audioMixer", mixer);
                 SetReference(bootstrapper, "musicSource", musicSource);
+                SetReference(bootstrapper, "secondaryMusicSource", secondaryMusicSource);
                 SetReference(bootstrapper, "sfxSource", sfxSource);
+                SetReference(bootstrapper, "menuMusicClip", LoadAudio(MenuMusicPath));
+                SetReference(bootstrapper, "gameplayMusicClip", LoadAudio(GameplayMusicPath));
                 SetReference(bootstrapper, "uiClickClip", LoadAudio("Assets/Cartoon Game Sound 2.0/s_ef_cm_dm_umbrella_open.wav"));
                 SetReference(bootstrapper, "buildClip", LoadAudio("Assets/Cartoon Game Sound 2.0/s_ef_ce_barrier.wav"));
                 SetReference(bootstrapper, "incomeClip", LoadAudio("Assets/Cartoon Game Sound 2.0/s_ef_ce_yororo_e.wav"));

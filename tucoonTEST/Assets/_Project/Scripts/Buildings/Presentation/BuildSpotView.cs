@@ -27,7 +27,7 @@ namespace SupermarketTycoon.Buildings
         {
             purchaseRoot.SetActive(true);
             buildButton.interactable = affordable;
-            label.text = $"+ BUILD {definition.DisplayName.ToUpperInvariant()}\n${definition.Cost}";
+            label.text = $"BUILD {definition.DisplayName.ToUpperInvariant()}\n${definition.Cost}";
         }
 
         public void ShowLocked(int requiredLevel)
@@ -41,7 +41,7 @@ namespace SupermarketTycoon.Buildings
         {
             purchaseRoot.SetActive(true);
             buildButton.interactable = true;
-            label.text = $"{definition.DisplayName.ToUpperInvariant()}  LV {level}\nMANAGE";
+            label.text = $"{definition.DisplayName.ToUpperInvariant()}  |  LEVEL {level}\nMANAGE";
         }
     }
 }

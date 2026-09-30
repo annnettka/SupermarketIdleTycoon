@@ -4,6 +4,7 @@ using SupermarketTycoon.Save;
 using SupermarketTycoon.SceneFlow;
 using SupermarketTycoon.UI;
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace SupermarketTycoon.Bootstrap
 {
@@ -12,8 +13,12 @@ namespace SupermarketTycoon.Bootstrap
     {
         [SerializeField] private GameConfig gameConfig;
         [SerializeField] private LoadingScreenView loadingScreen;
+        [SerializeField] private AudioMixer audioMixer;
         [SerializeField] private AudioSource musicSource;
+        [SerializeField] private AudioSource secondaryMusicSource;
         [SerializeField] private AudioSource sfxSource;
+        [SerializeField] private AudioClip menuMusicClip;
+        [SerializeField] private AudioClip gameplayMusicClip;
         [SerializeField] private AudioClip uiClickClip;
         [SerializeField] private AudioClip buildClip;
         [SerializeField] private AudioClip incomeClip;
@@ -58,8 +63,13 @@ namespace SupermarketTycoon.Bootstrap
             }
 
             var audio = new AudioService(
+                this,
+                audioMixer,
                 musicSource,
+                secondaryMusicSource,
                 sfxSource,
+                menuMusicClip,
+                gameplayMusicClip,
                 uiClickClip,
                 buildClip,
                 incomeClip,

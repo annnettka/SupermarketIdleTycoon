@@ -137,7 +137,18 @@ namespace SupermarketTycoon.Tests
 
         private static AudioService CreateSilentAudio()
         {
-            return new AudioService(null, null, null, null, null, null);
+            return new AudioService(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
         }
 
         private T Track<T>(T value) where T : Object

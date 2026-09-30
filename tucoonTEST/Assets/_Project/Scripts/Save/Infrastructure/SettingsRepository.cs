@@ -22,15 +22,12 @@ namespace SupermarketTycoon.Save
 
             try
             {
-                var data = JsonUtility.FromJson<SettingsData>(File.ReadAllText(settingsPath));
-                if (data == null)
-                {
-                    return new SettingsData { Fullscreen = Screen.fullScreen };
-                }
+                var data = new SettingsData { Fullscreen = Screen.fullScreen };
+                JsonUtility.FromJsonOverwrite(File.ReadAllText(settingsPath), data);
 
-                data.MasterVolume = Mathf.Clamp01(data.MasterVolume);
-                data.MusicVolume = Mathf.Clamp01(data.MusicVolume);
-                data.SfxVolume = Mathf.Clamp01(data.SfxVolume);
+                data.MasterVolume = NormalizeVolume(data.MasterVolume, 1f);
+                data.MusicVolume = NormalizeVolume(data.MusicVolume, 0.75f);
+                data.SfxVolume = NormalizeVolume(data.SfxVolume, 1f);
                 return data;
             }
             catch (Exception exception)
@@ -56,6 +53,13 @@ namespace SupermarketTycoon.Save
             {
                 Debug.LogError($"Failed to save settings: {exception.Message}");
             }
+        }
+
+        private static float NormalizeVolume(float value, float fallback)
+        {
+            return float.IsNaN(value) || float.IsInfinity(value)
+                ? fallback
+                : Mathf.Clamp01(value);
         }
     }
 }

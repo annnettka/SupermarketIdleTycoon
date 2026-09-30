@@ -84,6 +84,7 @@ namespace SupermarketTycoon.Editor
             PrefabRoot + "/Characters",
             PrefabRoot + "/UI",
             PrefabRoot + "/VFX",
+            Root + "/Audio",
             SceneRoot,
             Root + "/Tests/EditMode"
         };
@@ -138,6 +139,7 @@ namespace SupermarketTycoon.Editor
             try
             {
                 EnsureFolders();
+                EnsureAudioAssets();
                 var gameConfig = LoadOrCreateConfig<GameConfig>(GameConfigPath);
                 var customerConfig = LoadOrCreateConfig<CustomerConfig>(CustomerConfigPath);
                 var progressionConfig = LoadOrCreateConfig<SupermarketTycoon.Progression.ProgressionConfig>(ProgressionConfigPath);
