@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,10 +11,16 @@ namespace SupermarketTycoon.UI
         [SerializeField] private Slider xpBar;
         [SerializeField] private Text xpLabel;
         [SerializeField] private Text customerLabel;
+        [SerializeField] private Text ratingLabel;
         [SerializeField] private Text objectiveLabel;
         [SerializeField] private Button pauseButton;
         [SerializeField] private FloatingIncomeView floatingIncomePrefab;
         [SerializeField] private RectTransform floatingIncomeRoot;
+        [SerializeField] private GameObject notificationRoot;
+        [SerializeField] private CanvasGroup notificationGroup;
+        [SerializeField] private Text notificationLabel;
+
+        private Coroutine notificationRoutine;
 
         public Button PauseButton => pauseButton;
 
@@ -23,20 +30,28 @@ namespace SupermarketTycoon.UI
             Slider xp,
             Text xpText,
             Text customers,
+            Text rating,
             Text objective,
             Button pause,
             FloatingIncomeView floatingPrefab,
-            RectTransform floatingRoot)
+            RectTransform floatingRoot,
+            GameObject notification,
+            CanvasGroup notificationCanvasGroup,
+            Text notificationText)
         {
             moneyLabel = money;
             levelLabel = level;
             xpBar = xp;
             xpLabel = xpText;
             customerLabel = customers;
+            ratingLabel = rating;
             objectiveLabel = objective;
             pauseButton = pause;
             floatingIncomePrefab = floatingPrefab;
             floatingIncomeRoot = floatingRoot;
+            notificationRoot = notification;
+            notificationGroup = notificationCanvasGroup;
+            notificationLabel = notificationText;
         }
 
         public void SetMoney(int money)
@@ -47,8 +62,9 @@ namespace SupermarketTycoon.UI
         public void SetProgression(int level, int xp, int requiredXp)
         {
             levelLabel.text = $"LEVEL {level}";
-            xpBar.SetValueWithoutNotify(requiredXp > 0 ? (float)xp / requiredXp : 0f);
-            xpLabel.text = $"{xp} / {requiredXp} XP";
+            var isMaximum = requiredXp <= 0;
+            xpBar.SetValueWithoutNotify(isMaximum ? 1f : (float)xp / requiredXp);
+            xpLabel.text = isMaximum ? "STORE ESTABLISHED" : $"{xp} / {requiredXp} XP";
         }
 
         public void SetCustomers(int count)
@@ -56,11 +72,16 @@ namespace SupermarketTycoon.UI
             customerLabel.text = $"CUSTOMERS  {count}";
         }
 
-        public void SetObjective(bool operational)
+        public void SetRating(float rating)
         {
-            objectiveLabel.text = operational
-                ? "Customers are shopping automatically"
-                : "Build a shelf and a checkout";
+            ratingLabel.text = $"RATING  {rating:0.0} / 5";
+        }
+
+        public void SetObjective(string title, string progress, bool sequenceComplete)
+        {
+            objectiveLabel.text = sequenceComplete
+                ? "GOAL  STORE ESTABLISHED"
+                : $"GOAL  {title.ToUpperInvariant()}   {progress}";
         }
 
         public void ShowIncome(int amount)
@@ -70,6 +91,47 @@ namespace SupermarketTycoon.UI
                 var view = Instantiate(floatingIncomePrefab, floatingIncomeRoot);
                 view.Play(amount);
             }
+        }
+
+        public void ShowNotification(string title, string detail)
+        {
+            if (notificationRoot == null || notificationGroup == null || notificationLabel == null)
+            {
+                return;
+            }
+
+            if (notificationRoutine != null)
+            {
+                StopCoroutine(notificationRoutine);
+            }
+
+            notificationRoutine = StartCoroutine(PlayNotification(title, detail));
+        }
+
+        private IEnumerator PlayNotification(string title, string detail)
+        {
+            notificationRoot.SetActive(true);
+            notificationLabel.text = string.IsNullOrEmpty(detail) ? title : $"{title}\n{detail}";
+            notificationGroup.alpha = 0f;
+            var elapsed = 0f;
+            while (elapsed < 0.18f)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                notificationGroup.alpha = Mathf.Clamp01(elapsed / 0.18f);
+                yield return null;
+            }
+
+            yield return new WaitForSecondsRealtime(1.8f);
+            elapsed = 0f;
+            while (elapsed < 0.25f)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                notificationGroup.alpha = 1f - Mathf.Clamp01(elapsed / 0.25f);
+                yield return null;
+            }
+
+            notificationRoot.SetActive(false);
+            notificationRoutine = null;
         }
     }
 }

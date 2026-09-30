@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using SupermarketTycoon.Core;
 using UnityEngine;
@@ -55,10 +56,7 @@ namespace SupermarketTycoon.Save
                     throw new InvalidDataException("Save data is empty or has no supported version.");
                 }
 
-                data.Money = Math.Max(0, data.Money);
-                data.CurrentLevel = Math.Max(1, data.CurrentLevel);
-                data.CurrentXp = Math.Max(0, data.CurrentXp);
-                data.BuiltBuildings ??= new System.Collections.Generic.List<BuiltBuildingData>();
+                MigrateAndNormalize(data);
                 return data;
             }
             catch (Exception exception)
@@ -78,6 +76,7 @@ namespace SupermarketTycoon.Save
 
             try
             {
+                MigrateAndNormalize(data);
                 var directory = Path.GetDirectoryName(savePath);
                 if (!string.IsNullOrEmpty(directory))
                 {
@@ -110,10 +109,44 @@ namespace SupermarketTycoon.Save
         {
             return new SaveData
             {
+                SaveVersion = SaveData.CurrentVersion,
                 Money = config.StartingMoney,
                 CurrentLevel = 1,
-                CurrentXp = 0
+                CurrentXp = 0,
+                StoreRating = 3f,
+                LastSaveUtcTicks = DateTime.UtcNow.Ticks
             };
+        }
+
+        private static void MigrateAndNormalize(SaveData data)
+        {
+            data.Money = Math.Max(0, data.Money);
+            data.CurrentLevel = Math.Max(1, data.CurrentLevel);
+            data.CurrentXp = Math.Max(0, data.CurrentXp);
+            data.BuiltBuildings ??= new List<BuiltBuildingData>();
+            data.PurchasedExpansionIds ??= new List<string>();
+            data.LifetimeStats ??= new LifetimeStatsData();
+            data.CashierLevel = Math.Max(0, data.CashierLevel);
+            data.StoreRating = data.StoreRating <= 0f
+                ? 3f
+                : Mathf.Clamp(data.StoreRating, 1f, 5f);
+            data.CurrentObjectiveIndex = Math.Max(0, data.CurrentObjectiveIndex);
+            data.CurrentObjectiveProgress = Math.Max(0, data.CurrentObjectiveProgress);
+            data.PendingOfflineIncome = Math.Max(0, data.PendingOfflineIncome);
+
+            for (var i = data.BuiltBuildings.Count - 1; i >= 0; i--)
+            {
+                var building = data.BuiltBuildings[i];
+                if (building == null || string.IsNullOrWhiteSpace(building.BuildSpotId))
+                {
+                    data.BuiltBuildings.RemoveAt(i);
+                    continue;
+                }
+
+                building.BuildingLevel = Math.Max(1, building.BuildingLevel);
+            }
+
+            data.SaveVersion = SaveData.CurrentVersion;
         }
 
         private void TryBackupCorruptedFile()

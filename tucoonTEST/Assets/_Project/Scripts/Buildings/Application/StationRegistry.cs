@@ -8,6 +8,7 @@ namespace SupermarketTycoon.Buildings
     {
         private readonly List<ShelfStation> shelves = new List<ShelfStation>();
         private readonly List<CheckoutStation> checkouts = new List<CheckoutStation>();
+        private float checkoutEmployeeSpeedMultiplier = 1f;
 
         public bool IsOperational => HasShelf && HasCheckout;
         public bool HasShelf => shelves.Exists(shelf => shelf != null);
@@ -26,6 +27,19 @@ namespace SupermarketTycoon.Buildings
             if (checkout != null && !checkouts.Contains(checkout))
             {
                 checkouts.Add(checkout);
+                checkout.SetEmployeeSpeedMultiplier(checkoutEmployeeSpeedMultiplier);
+            }
+        }
+
+        public void SetCheckoutEmployeeSpeedMultiplier(float multiplier)
+        {
+            checkoutEmployeeSpeedMultiplier = multiplier < 0.1f ? 0.1f : multiplier;
+            for (var i = 0; i < checkouts.Count; i++)
+            {
+                if (checkouts[i] != null)
+                {
+                    checkouts[i].SetEmployeeSpeedMultiplier(checkoutEmployeeSpeedMultiplier);
+                }
             }
         }
 

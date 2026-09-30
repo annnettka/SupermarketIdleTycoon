@@ -4,6 +4,9 @@ using SupermarketTycoon.Bootstrap;
 using SupermarketTycoon.Buildings;
 using SupermarketTycoon.Core;
 using SupermarketTycoon.Customers;
+using SupermarketTycoon.Employees;
+using SupermarketTycoon.Expansion;
+using SupermarketTycoon.Objectives;
 using SupermarketTycoon.Progression;
 using SupermarketTycoon.SceneFlow;
 using SupermarketTycoon.UI;
@@ -78,7 +81,12 @@ namespace SupermarketTycoon.Editor
             BuildingDefinition shelf,
             BuildingDefinition checkout,
             BuildingDefinition shelfExpansion,
-            BuildingDefinition checkoutExpansion)
+            BuildingDefinition checkoutExpansion,
+            BuildingDefinition premiumShelf,
+            CustomerProfileDefinition[] customerProfiles,
+            ObjectiveConfig objectiveConfig,
+            EmployeeDefinition employeeDefinition,
+            StoreExpansionDefinition expansionDefinition)
         {
             BuildOwnedScene(GameScenePath, () =>
             {
@@ -90,11 +98,24 @@ namespace SupermarketTycoon.Editor
 
                 var spots = new[]
                 {
-                    CreateWorldBuildSpot("spot.shelf.a", shelf, new Vector3(-3.2f, 0.12f, 1.8f), Quaternion.Euler(0f, 0f, 0f), camera),
-                    CreateWorldBuildSpot("spot.checkout.a", checkout, new Vector3(3.2f, 0.12f, -1.7f), Quaternion.Euler(0f, 180f, 0f), camera),
-                    CreateWorldBuildSpot("spot.shelf.b", shelfExpansion, new Vector3(-3.2f, 0.12f, -2.3f), Quaternion.Euler(0f, 0f, 0f), camera),
-                    CreateWorldBuildSpot("spot.checkout.b", checkoutExpansion, new Vector3(3.2f, 0.12f, 2.4f), Quaternion.Euler(0f, 180f, 0f), camera)
+                    CreateWorldBuildSpot("spot.shelf.a", shelf, new Vector3(-3.2f, 0.12f, -2.4f), Quaternion.identity, camera),
+                    CreateWorldBuildSpot("spot.checkout.a", checkout, new Vector3(3.2f, 0.12f, -2.4f), Quaternion.Euler(0f, 180f, 0f), camera),
+                    CreateWorldBuildSpot("spot.shelf.b", shelfExpansion, new Vector3(-3.2f, 0.12f, 1.1f), Quaternion.identity, camera),
+                    CreateWorldBuildSpot("spot.checkout.b", checkoutExpansion, new Vector3(3.2f, 0.12f, 4.2f), Quaternion.Euler(0f, 180f, 0f), camera, expansionDefinition.Id),
+                    CreateWorldBuildSpot("spot.shelf.premium", premiumShelf, new Vector3(-3.2f, 0.12f, 4.5f), Quaternion.identity, camera, expansionDefinition.Id)
                 };
+
+                var expansionSpot = CreateStoreExpansionSpot(expansionDefinition, camera);
+
+                var cashierPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(CashierPrefabPath);
+                GameObject cashierVisual = null;
+                if (cashierPrefab != null)
+                {
+                    cashierVisual = (GameObject)PrefabUtility.InstantiatePrefab(cashierPrefab, SceneManager.GetActiveScene());
+                    cashierVisual.name = "Cashier Employee";
+                    cashierVisual.transform.SetPositionAndRotation(new Vector3(4.25f, 0f, -1.8f), Quaternion.Euler(0f, 180f, 0f));
+                    cashierVisual.SetActive(false);
+                }
 
                 var navigationRoot = new GameObject("Navigation");
                 var surface = navigationRoot.AddComponent<NavMeshSurface>();
@@ -123,7 +144,11 @@ namespace SupermarketTycoon.Editor
                 CreateGameUi(
                     canvas.transform,
                     out var hud,
+                    out var buildingPanel,
+                    out var employeePanel,
+                    out var offlinePanel,
                     out var pauseMenu,
+                    out var statsPanel,
                     out var settingsView);
 
                 var entry = new GameObject("Game Entry Point").AddComponent<GameSceneEntryPoint>();
@@ -131,10 +156,19 @@ namespace SupermarketTycoon.Editor
                     gameConfig,
                     customerConfig,
                     progressionConfig,
+                    customerProfiles,
+                    objectiveConfig,
+                    employeeDefinition,
                     spots,
+                    new[] { expansionSpot },
+                    cashierVisual,
                     spawner,
                     hud,
+                    buildingPanel,
+                    employeePanel,
+                    offlinePanel,
                     pauseMenu,
+                    statsPanel,
                     settingsView);
 
                 surface.BuildNavMesh();

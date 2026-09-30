@@ -9,7 +9,7 @@ namespace SupermarketTycoon.Core
         [SerializeField, Min(1)] private int customerPayment = 15;
         [SerializeField, Min(1)] private int customerXpReward = 10;
         [SerializeField, Min(0.1f)] private float spawnInterval = 2.75f;
-        [SerializeField, Range(1, 8)] private int maximumActiveCustomers = 6;
+        [SerializeField, Range(1, 10)] private int maximumActiveCustomers = 10;
         [SerializeField, Min(0f)] private float minimumLoadingDuration = 0.3f;
 
         public int StartingMoney => startingMoney;

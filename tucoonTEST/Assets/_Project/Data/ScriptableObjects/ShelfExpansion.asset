@@ -16,7 +16,29 @@ MonoBehaviour:
   displayName: Shelf
   type: 0
   prefab: {fileID: 5586953289062961552, guid: b475cbc82892411479a5d657f3017baf, type: 3}
-  cost: 75
+  cost: 150
   requiredLevel: 2
   capacity: 1
   incomeMultiplier: 1
+  upgradeLevels:
+  - level: 1
+    upgradeCost: 0
+    requiredPlayerLevel: 2
+    capacity: 1
+    incomeMultiplier: 1
+    interactionDuration: 2.25
+    visualScale: 1
+  - level: 2
+    upgradeCost: 175
+    requiredPlayerLevel: 2
+    capacity: 2
+    incomeMultiplier: 1.25
+    interactionDuration: 1.9
+    visualScale: 1.04
+  - level: 3
+    upgradeCost: 275
+    requiredPlayerLevel: 4
+    capacity: 3
+    incomeMultiplier: 1.5
+    interactionDuration: 1.6
+    visualScale: 1.08

@@ -25,6 +25,8 @@ namespace SupermarketTycoon.Buildings
         private readonly StationRegistry stations;
         private readonly AudioService audio;
         private readonly Dictionary<string, BuildSpot> spots = new Dictionary<string, BuildSpot>();
+        private readonly Dictionary<string, BuiltBuildingData> builtStates =
+            new Dictionary<string, BuiltBuildingData>();
 
         public BuildingService(
             IWallet wallet,
@@ -42,6 +44,86 @@ namespace SupermarketTycoon.Buildings
 
         public event Action StateChanged;
         public event Action<BuildSpot, BuildingDefinition> BuildingBuilt;
+        public event Action<BuildSpot, int> BuildingLevelChanged;
+        public event Action<BuildSpot> BuildingSelected;
+
+        public int BuiltCount
+        {
+            get
+            {
+                var count = 0;
+                foreach (var pair in spots)
+                {
+                    if (pair.Value != null && pair.Value.IsBuilt)
+                    {
+                        count++;
+                    }
+                }
+
+                return count;
+            }
+        }
+
+        public int CountBuilt(BuildingType type)
+        {
+            var count = 0;
+            foreach (var pair in spots)
+            {
+                var spot = pair.Value;
+                if (spot != null && spot.IsBuilt && spot.Definition != null && spot.Definition.Type == type)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        public int GetHighestLevel(BuildingType type)
+        {
+            var highest = 0;
+            foreach (var pair in spots)
+            {
+                var spot = pair.Value;
+                if (spot != null && spot.IsBuilt && spot.Definition != null && spot.Definition.Type == type)
+                {
+                    highest = Math.Max(highest, spot.CurrentLevel);
+                }
+            }
+
+            return highest;
+        }
+
+        public bool IsDefinitionBuilt(string definitionId)
+        {
+            foreach (var pair in spots)
+            {
+                var spot = pair.Value;
+                if (spot != null && spot.IsBuilt && spot.Definition != null &&
+                    string.Equals(spot.Definition.Id, definitionId, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public int GetHighestLevel(string definitionId)
+        {
+            var highest = 0;
+            foreach (var pair in spots)
+            {
+                var spot = pair.Value;
+                if (spot != null && spot.IsBuilt && spot.Definition != null &&
+                    string.Equals(spot.Definition.Id, definitionId, StringComparison.Ordinal))
+                {
+                    highest = Math.Max(highest, spot.CurrentLevel);
+                }
+            }
+
+            return highest;
+        }
 
         public bool CanAfford(BuildingDefinition definition)
         {
@@ -78,7 +160,7 @@ namespace SupermarketTycoon.Buildings
                 return PurchaseResult.AlreadyBuilt;
             }
 
-            if (progression.CurrentLevel < spot.Definition.RequiredLevel)
+            if (!spot.IsExpansionUnlocked || progression.CurrentLevel < spot.Definition.RequiredLevel)
             {
                 return PurchaseResult.Locked;
             }
@@ -88,8 +170,52 @@ namespace SupermarketTycoon.Buildings
                 return PurchaseResult.InsufficientFunds;
             }
 
-            CreateBuilding(spot, true);
+            CreateBuilding(spot, 1, true);
             return PurchaseResult.Success;
+        }
+
+        public void Select(BuildSpot spot)
+        {
+            if (spot != null && spot.IsBuilt)
+            {
+                BuildingSelected?.Invoke(spot);
+            }
+        }
+
+        public bool ApplyLevel(BuildSpot spot, int level)
+        {
+            if (spot == null || !spot.IsBuilt || spot.Definition == null ||
+                level < 1 || level > spot.Definition.MaxLevel)
+            {
+                return false;
+            }
+
+            spot.SetLevel(level);
+            ApplyBuildingLevel(spot);
+            builtStates[spot.StableId] = new BuiltBuildingData(
+                spot.StableId,
+                spot.Definition.Id,
+                spot.CurrentLevel);
+            BuildingLevelChanged?.Invoke(spot, level);
+            StateChanged?.Invoke();
+            return true;
+        }
+
+        public void SetExpansionUnlocked(string expansionId, bool unlocked)
+        {
+            foreach (var pair in spots)
+            {
+                var spot = pair.Value;
+                if (spot != null && string.Equals(
+                        spot.RequiredExpansionId,
+                        expansionId,
+                        StringComparison.Ordinal))
+                {
+                    spot.SetExpansionUnlocked(unlocked);
+                }
+            }
+
+            StateChanged?.Invoke();
         }
 
         public void Restore(IEnumerable<BuiltBuildingData> builtBuildings)
@@ -115,7 +241,7 @@ namespace SupermarketTycoon.Buildings
 
                 if (!spot.IsBuilt)
                 {
-                    CreateBuilding(spot, false);
+                    CreateBuilding(spot, Mathf.Max(1, savedBuilding.BuildingLevel), false);
                 }
             }
 
@@ -125,16 +251,50 @@ namespace SupermarketTycoon.Buildings
         public List<BuiltBuildingData> CaptureBuiltBuildings()
         {
             var result = new List<BuiltBuildingData>();
-            foreach (var pair in spots)
+            foreach (var pair in builtStates)
             {
-                var spot = pair.Value;
-                if (spot != null && spot.IsBuilt && spot.Definition != null)
-                {
-                    result.Add(new BuiltBuildingData(spot.StableId, spot.Definition.Id));
-                }
+                var saved = pair.Value;
+                result.Add(new BuiltBuildingData(
+                    saved.BuildSpotId,
+                    saved.BuildingDefinitionId,
+                    saved.BuildingLevel));
             }
 
             return result;
+        }
+
+        public void GetOfflineMetrics(
+            out int shelfCapacity,
+            out int checkoutCapacity,
+            out float averageIncomeMultiplier)
+        {
+            shelfCapacity = 0;
+            checkoutCapacity = 0;
+            var multiplierTotal = 0f;
+            var shelfCount = 0;
+
+            foreach (var pair in spots)
+            {
+                var spot = pair.Value;
+                if (spot == null || !spot.IsBuilt || spot.Definition == null)
+                {
+                    continue;
+                }
+
+                var level = spot.Definition.GetLevel(spot.CurrentLevel);
+                if (spot.Definition.Type == BuildingType.Shelf)
+                {
+                    shelfCapacity += level.Capacity;
+                    multiplierTotal += level.IncomeMultiplier;
+                    shelfCount++;
+                }
+                else if (spot.Definition.Type == BuildingType.Checkout)
+                {
+                    checkoutCapacity += level.Capacity;
+                }
+            }
+
+            averageIncomeMultiplier = shelfCount > 0 ? multiplierTotal / shelfCount : 1f;
         }
 
         public void Dispose()
@@ -143,7 +303,7 @@ namespace SupermarketTycoon.Buildings
             progression.LevelChanged -= OnLevelChanged;
         }
 
-        private void CreateBuilding(BuildSpot spot, bool notify)
+        private void CreateBuilding(BuildSpot spot, int level, bool notify)
         {
             var placement = spot.PlacementRoot;
             var building = UnityEngine.Object.Instantiate(
@@ -152,7 +312,11 @@ namespace SupermarketTycoon.Buildings
                 placement.rotation,
                 placement);
             building.name = spot.Definition.DisplayName;
-            spot.MarkBuilt(building);
+            spot.MarkBuilt(building, level);
+            builtStates[spot.StableId] = new BuiltBuildingData(
+                spot.StableId,
+                spot.Definition.Id,
+                spot.CurrentLevel);
 
             var shelf = building.GetComponentInChildren<ShelfStation>(true);
             if (shelf != null)
@@ -166,6 +330,8 @@ namespace SupermarketTycoon.Buildings
                 stations.Register(checkout);
             }
 
+            ApplyBuildingLevel(spot);
+
             if (notify)
             {
                 audio.Play(GameSound.Build);
@@ -173,6 +339,18 @@ namespace SupermarketTycoon.Buildings
             }
 
             StateChanged?.Invoke();
+        }
+
+        private static void ApplyBuildingLevel(BuildSpot spot)
+        {
+            var level = spot.Definition.GetLevel(spot.CurrentLevel);
+            var shelf = spot.BuildingObject.GetComponentInChildren<ShelfStation>(true);
+            shelf?.ApplyLevel(level);
+
+            var checkout = spot.BuildingObject.GetComponentInChildren<CheckoutStation>(true);
+            checkout?.ApplyLevel(level);
+
+            spot.BuildingObject.transform.localScale = Vector3.one * level.VisualScale;
         }
 
         private void OnStateChanged(int _)

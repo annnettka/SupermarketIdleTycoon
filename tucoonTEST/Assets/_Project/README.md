@@ -1,140 +1,151 @@
 # Supermarket Idle Tycoon
 
-Target Unity version: **6000.3.17f1**
+Target Unity version: **6000.3.17f1**  
 Version currently declared by this checkout: **6000.3.13f1**
 
-This is a small playable 3D idle-tycoon vertical slice. Project-owned code, scenes, data, wrappers, tests, and UI live under `Assets/_Project`. Imported packs outside this folder are read-only dependencies.
+This project is a compact 3D idle-tycoon vertical slice built for a 10-15 minute progression run. Project-owned code, scenes, data, wrappers, tests, and UI live under `Assets/_Project`. Imported packages outside that folder are read-only dependencies.
 
 ## Run the demo
 
-1. Open the project in Unity.
-2. Wait for script compilation to finish with no project-owned errors.
-3. Run `Tools > Supermarket Tycoon > Build / Repair Playable Demo` once. The builder is idempotent and only recreates project-owned content.
-4. Press Play. The project configures `Assets/_Project/Scenes/Bootstrap.unity` as the Play Mode start scene even when MainMenu or Game is open for editing.
+1. Open the project and let Unity finish importing and compiling.
+2. Run `Tools > Supermarket Tycoon > Build / Repair Playable Demo` once.
+3. Press Play. Bootstrap is configured as the Play Mode start scene and loads Main Menu asynchronously.
 
-The Bootstrap scene loads MainMenu asynchronously. Select Play or Continue to enter the supermarket. Build the shelf for $50 and checkout for $100; customers then shop and pay automatically. Use the top-right pause button to resume, change settings, reset progress, or return to Main Menu.
+The builder is idempotent and recreates only project-owned generated content. A fresh game starts with $150: build the $50 Shelf and $100 Checkout to start customer traffic.
+
+## Progression
+
+Progression uses data from `ProgressionConfig` and caps at level 5.
+
+| Level | XP threshold | Main unlocks |
+| --- | ---: | --- |
+| 1 | 0 | First Shelf and Checkout |
+| 2 | 100 | Second Shelf and Cashier |
+| 3 | 300 cumulative | Store Expansion and second Checkout |
+| 4 | 650 cumulative | VIP customers and Premium Shelf |
+| 5 | 1100 cumulative | Maximum customer flow and Store Established milestone |
+
+The active-customer cap grows through 3, 4, 6, 8, and 10. Level-up notifications name the new unlocks, and the HUD always shows the active objective.
+
+## Building Upgrades
+
+Every `BuildingDefinition` contains `BuildingLevelDefinition[]`. Levels configure upgrade cost, required player level, station capacity, income multiplier, interaction duration, and presentation scale. `BuildingUpgradeService` is the only upgrade use case: it validates state, progression, and funds before spending and applying the level through `BuildingService`.
+
+Selecting a built station opens its contextual panel. Shelf panels compare income and capacity; Checkout panels compare service time and queue capacity. Level 3 stations show `MAX LEVEL`.
+
+To add an upgrade, append a level to the building asset. No `BuildingService` code change is required.
+
+## Store Expansion
+
+`StoreExpansionDefinition`, `StoreExpansionSpot`, and `StoreExpansionService` model future expansion zones. The first zone requires level 3 and $500. Before purchase, a visible barrier and lock prompt divide the store. Purchase removes the barrier, reveals the developed floor treatment, and enables expansion-gated BuildSpots for the second Checkout and Premium Shelf.
+
+To add an expansion, create a definition with a stable ID, add a `StoreExpansionSpot`, and put that ID on gated BuildSpots.
+
+## Automation
+
+The Cashier employee unlocks at level 2. `EmployeeService` persists the employee level and applies its multiplier through `StationRegistry`, including Checkouts built later.
+
+| Cashier level | Cost | Required player level | Checkout speed bonus |
+| --- | ---: | ---: | ---: |
+| 1 | $300 | 2 | 20% |
+| 2 | $450 | 3 | 35% |
+| 3 | $700 | 4 | 50% |
+
+The employee uses a project-owned wrapper around the existing character asset. Add future employees as definitions and focused services; employee UI must request the service use case rather than mutate save state.
+
+## Customer Profiles
+
+The pooled customer agent and existing FSM are shared by every profile. `CustomerProfileDefinition` configures movement, shopping time, payment, patience, spawn weight, required level, and a material-property tint.
+
+- Normal: standard values and 15 seconds of queue patience.
+- Impatient: 18% faster, 8 seconds of patience, and 15% less payment.
+- VIP: unlocks at level 4, moves slightly slower, waits 20 seconds, and pays 2x.
+
+Add a customer type by creating another profile asset and adding it to `GameSceneEntryPoint`. The FSM does not need to be duplicated.
+
+## Store Rating
+
+Rating starts at 3.0 and is clamped to 1-5. A completed transaction adds 0.03, an impatient departure removes 0.12, and a store upgrade adds 0.05. Ratings below 3.0 make spawn intervals 15% longer; ratings of 4.0 or above make them 10% shorter. Rating is visible in the HUD and saved.
+
+## Objectives
+
+`ObjectiveConfig` holds the ordered, data-driven milestone sequence. `ObjectiveService` consumes explicit gameplay events for building, upgrades, customers, income, levels, employees, expansions, and rating. Rewards are applied through `EconomyService` and `ProgressionService`, then the next goal appears automatically.
+
+The authored sequence covers the first Shelf and Checkout, five served customers, a Shelf upgrade, level 2, Cashier hire, $500 earned, Store Expansion, 25 served customers, rating 4.0, and level 5.
+
+Add an objective by appending an `ObjectiveDefinition` to `ObjectiveConfig`; select a supported type, target, optional stable ID filter, and reward.
+
+## Offline Income
+
+Saves store UTC ticks and any uncollected amount. On return, `OfflineIncomeService` calculates at most 120 minutes without simulating customers:
+
+```text
+estimated customers per minute
+* base customer payment
+* average shelf income multiplier
+* cashier speed multiplier
+* minutes away
+* 0.35 offline efficiency
+```
+
+The estimate is limited by both Shelf and Checkout capacity. Income is moved to the wallet only when `COLLECT` is pressed, and pending income becomes zero immediately so it cannot be collected twice.
+
+## Stats
+
+The Pause menu exposes lifetime Customers Served, Customers Lost, Total Money Earned, Buildings Purchased, and Upgrades Purchased. `StatisticsService` owns these counters and the save coordinator persists a copy.
+
+## Save Migration
+
+Gameplay is readable JSON at `Application.persistentDataPath/supermarket-save.json`; the previous valid file is retained as `supermarket-save.backup.json`. Save version 2 adds:
+
+```text
+BuildingLevel
+PurchasedExpansionIds[]
+CashierLevel
+StoreRating
+CurrentObjectiveIndex / CurrentObjectiveProgress
+LifetimeStats
+LastSaveUtcTicks
+PendingOfflineIncome
+```
+
+Version 1 files retain money, XP, level, and built stations. Missing building levels become 1, rating becomes 3.0, collections and stats are initialized, and invalid numeric values are clamped. Migration never deletes an existing save. Reset Progress explicitly deletes gameplay data while retaining settings.
 
 ## Architecture
 
-The runtime uses a pragmatic modular architecture inside one assembly. Plain C# services own game rules and state; MonoBehaviours adapt those services to scenes, navigation, and UI. ScriptableObjects contain configuration only.
-
 ```text
-Bootstrap
-   |
-AppBootstrapper (composition root)
-   |
-ApplicationContext
-   +-- SceneFlowService
-   +-- AudioService
-   +-- SettingsService
-   +-- SaveRepository
-             |
-             v
-         Game Scene
-             |
-      GameSceneEntryPoint
-             |
-         Game Session
-     /       |        \
- Wallet  Buildings  Customers (FSM + pool)
-             |        |
-        Stations <--- Queue
-             |        |
-             +--> Checkout --> Economy --> Progression
+AppBootstrapper
+  -> ApplicationContext (scene flow, audio, settings, repositories)
+     -> GameSceneEntryPoint (session composition root)
+        -> Wallet -> EconomyService
+        -> ProgressionService -> StoreRatingService
+        -> BuildingService -> BuildingUpgradeService -> StationRegistry
+        -> StoreExpansionService
+        -> EmployeeService ---------------------------> StationRegistry
+        -> CustomerSpawner -> pooled CustomerAgent -> shared FSM
+                              -> Shelf / Checkout queue
+        -> ObjectiveService / StatisticsService / OfflineIncomeService
+        -> GameSaveCoordinator
+        -> focused UI controllers and views
 ```
 
-`AppBootstrapper` explicitly constructs application-wide services. A loaded scene exposes one `SceneEntryPoint`; `SceneFlowService` injects `ApplicationContext` at the scene boundary. `GameSceneEntryPoint` then constructs the session-scoped wallet, progression, economy, station registry, building service, customer spawner, save coordinator, and UI controllers. No service locator or public global manager is used.
-
-## Modules
-
-- `Scripts/Core`: application context, game configuration, pause state, and composition support.
-- `Scripts/Economy`: wallet invariants and transaction income.
-- `Scripts/Buildings`: data-driven definitions, build spots, purchase validation, shelf stations, and station registry.
-- `Scripts/Customers`: customer configuration, pooled agents, runtime context, and finite state machine.
-- `Scripts/Checkout`: checkout queue and queue-point ownership.
-- `Scripts/Progression`: XP thresholds, level changes, and unlock events.
-- `Scripts/Save`: JSON data, repositories, settings persistence, and save coordination.
-- `Scripts/SceneFlow`: asynchronous scene loading and scene entry points.
-- `Scripts/UI`: view components and controllers for menu, HUD, settings, pause, loading, and income feedback.
-- `Scripts/Audio`: centralized UI/build/income/level-up cues.
-- `Editor`: idempotent project builder and asset wiring.
-- `Tests/EditMode`: wallet, progression, and JSON round-trip tests.
-
-## Gameplay loop
-
-The player starts with $150. Build spots call `BuildingService`, which validates level, occupancy, configuration, and funds before spending. Once at least one `ShelfStation` and one `CheckoutStation` are registered, `CustomerSpawner` begins producing up to six pooled customers.
-
-```text
-Spawn -> reserve shelf -> walk -> shop -> release shelf
-      -> join checkout -> advance in queue -> pay
-      -> award money and XP -> exit -> return to pool
-```
-
-The customer state machine uses separate state classes. Missing shelves/checkouts, full queues, vanished destinations, pause, and missing NavMesh placement result in waiting or retrying instead of exceptions.
-
-`CheckoutStation` owns an ordered customer list and three authored queue transforms. Each customer asks for its current position every tick, so the line advances automatically when the first customer completes payment or leaves.
-
-## Save data
-
-Gameplay is stored as readable JSON at:
-
-```text
-Application.persistentDataPath/supermarket-save.json
-```
-
-A previous valid file is retained as `supermarket-save.backup.json`. Corrupt data is backed up and replaced with a safe fresh state. The format stores:
-
-```text
-SaveVersion
-Money
-CurrentLevel
-CurrentXp
-BuiltBuildings[]
-  BuildSpotId
-  BuildingDefinitionId
-```
-
-Settings use `supermarket-settings.json` and are not deleted by Reset Progress. Saves occur after purchases, completed customer transactions/progression changes, application pause, application quit, and before returning to Main Menu.
-
-## Extending buildings
-
-1. Create a project-owned wrapper prefab under `Art/Prefabs/Buildings`; nest a third-party visual instead of editing its source.
-2. Add logical station/interaction transforms and components to the wrapper.
-3. Create a `BuildingDefinition` asset with a stable unique ID, type, prefab, cost, required level, and capacity.
-4. Add a `BuildSpot` with a stable spot ID and reference the new definition.
-
-`BuildingService` remains the purchase boundary. New UI buttons should request the use case through it rather than changing the wallet or instantiating prefabs directly.
-
-## Extending customer behavior
-
-Implement another `ICustomerState` in `Scripts/Customers/States`, transition to it from an existing state, and keep scene dependencies in `CustomerRuntimeContext`. States should reserve shared resources on entry and release them on every completion/cancellation path. New visual animation behavior belongs in a presentation adapter, not in the state rules.
-
-## Third-party assets used read-only
-
-- Grocery environment and visuals: `Assets/Gridness Studios/Grocery Store Pack Lite`
-- Customer visual and existing animator: `Assets/Hodaart/HodaartLowPolyCharacterCollection3`
-- Mobile UI sprites: `Assets/HONETi/mobile_cartoon_GUI`
-- Build feedback: `Assets/SimpleFX`
-- Audio cues: `Assets/Cartoon Game Sound 2.0`
-- Navigation: official `com.unity.ai.navigation` package
-
-The builder loads these exact paths and falls back to clean native Unity primitives/colors when an optional visual cannot be loaded. It never writes into source pack folders.
+Services are plain C# objects with explicit constructor dependencies and events. MonoBehaviours adapt them to scenes, navigation, pooled agents, and Unity UI. There is no service locator, mutable global state, or monolithic game manager.
 
 ## Generated content
 
-The builder creates or repairs:
+The builder creates or repairs the three project scenes, gameplay configuration assets, five building definitions, three customer profiles, employee/objective/expansion definitions, project-owned wrapper prefabs, NavMesh data, expansion visuals, and all HUD/pause/settings/stats/offline panels. Checkout wrappers author five queue positions.
 
-- `Scenes/Bootstrap.unity`, `Scenes/MainMenu.unity`, `Scenes/Game.unity`
-- `Data/ScriptableObjects/GameConfig.asset`, `CustomerConfig.asset`, `ProgressionConfig.asset`
-- Four `BuildingDefinition` assets for level 1-3 spots
-- Wrapper prefabs for shelf, checkout, customer, floating income, and purchase FX
-- Project-owned materials, Main Menu, loading overlay, HUD, pause/settings/reset UI
-- Four build spots, customer spawn/exit, queue points, NavMeshSurface, and baked NavMesh data
-- Build Settings with Bootstrap, MainMenu, and Game at indices 0-2 while preserving unrelated existing scenes afterward
+Known third-party Grocery and SimpleFX materials are copied into project-owned URP-compatible replacements by `MaterialRepairTool`; source assets remain untouched.
 
-## Controls
+## Third-party assets used read-only
 
-- Mouse/touch: menu, settings, build spots, and pause controls.
-- `PLAY`/`CONTINUE`: load the game asynchronously.
-- `II`: pause.
-- `RESET PROGRESS`: confirmation-gated gameplay reset; audio/display settings remain intact.
+- Grocery environment and stations: `Assets/Gridness Studios/Grocery Store Pack Lite`
+- Customer and Cashier visuals: `Assets/Hodaart/HodaartLowPolyCharacterCollection3`
+- UI sprites: `Assets/HONETi/mobile_cartoon_GUI`
+- Purchase feedback: `Assets/SimpleFX`
+- Audio cues: `Assets/Cartoon Game Sound 2.0`
+- Navigation: official `com.unity.ai.navigation` package
+
+## Tests
+
+EditMode coverage includes wallet invariants, XP overflow and level cap, save round-trip and version-1 migration, objective rewards, rating bounds/traffic thresholds, and customer-payment multipliers.

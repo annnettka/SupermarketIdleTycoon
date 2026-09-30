@@ -106,7 +106,8 @@ namespace SupermarketTycoon.Editor
                 screenshot.Apply(false);
 
                 var absolutePath = Path.GetFullPath(
-                    Path.Combine(Application.dataPath, "../Temp/MaterialRepairGame.png"));
+                    Path.Combine(Application.dataPath, "../Logs/MaterialRepairGame.png"));
+                Directory.CreateDirectory(Path.GetDirectoryName(absolutePath));
                 File.WriteAllBytes(absolutePath, screenshot.EncodeToPNG());
 
                 var pixels = screenshot.GetPixels32();

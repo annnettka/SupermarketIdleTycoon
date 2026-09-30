@@ -1,7 +1,9 @@
 using SupermarketTycoon.Buildings;
+using SupermarketTycoon.Expansion;
 using SupermarketTycoon.UI;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UI;
 
 namespace SupermarketTycoon.Editor
@@ -99,7 +101,8 @@ namespace SupermarketTycoon.Editor
             BuildingDefinition definition,
             Vector3 position,
             Quaternion rotation,
-            Camera camera)
+            Camera camera,
+            string requiredExpansionId = null)
         {
             var root = new GameObject($"Build Spot - {id}");
             root.transform.SetPositionAndRotation(position, rotation);
@@ -141,7 +144,67 @@ namespace SupermarketTycoon.Editor
             view.Configure(button, label, canvasObject);
 
             var spot = root.AddComponent<BuildSpot>();
-            spot.Configure(id, definition, placement, view);
+            spot.Configure(id, definition, placement, view, requiredExpansionId);
+            return spot;
+        }
+
+        private static StoreExpansionSpot CreateStoreExpansionSpot(
+            StoreExpansionDefinition definition,
+            Camera camera)
+        {
+            var root = new GameObject("Store Expansion");
+
+            var lockedVisual = new GameObject("Locked Area");
+            lockedVisual.transform.SetParent(root.transform, false);
+            var barrier = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            barrier.name = "Expansion Barrier";
+            barrier.transform.SetParent(lockedVisual.transform, false);
+            barrier.transform.position = new Vector3(0f, 0.75f, 2.55f);
+            barrier.transform.localScale = new Vector3(11.5f, 1.5f, 0.25f);
+            barrier.GetComponent<Renderer>().sharedMaterial = GetOrCreateMaterial("ExpansionBarrier", AccentYellow);
+            UnityEngine.Object.DestroyImmediate(barrier.GetComponent<Collider>());
+            var obstacle = barrier.AddComponent<NavMeshObstacle>();
+            obstacle.shape = NavMeshObstacleShape.Box;
+            obstacle.size = Vector3.one;
+            obstacle.carving = true;
+
+            var unlockedVisual = new GameObject("Expanded Store Visual");
+            unlockedVisual.transform.SetParent(root.transform, false);
+            for (var i = -1; i <= 1; i += 2)
+            {
+                var trim = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                trim.name = "Expansion Floor Trim";
+                trim.transform.SetParent(unlockedVisual.transform, false);
+                trim.transform.position = new Vector3(i * 5.8f, 0.08f, 4.65f);
+                trim.transform.localScale = new Vector3(0.18f, 0.14f, 4f);
+                trim.GetComponent<Renderer>().sharedMaterial = GetOrCreateMaterial("StoreGreen", StoreGreen);
+                UnityEngine.Object.DestroyImmediate(trim.GetComponent<Collider>());
+            }
+
+            unlockedVisual.SetActive(false);
+
+            var canvasObject = new GameObject("Expansion Prompt", typeof(RectTransform));
+            canvasObject.transform.SetParent(root.transform, false);
+            canvasObject.transform.position = new Vector3(0f, 2.1f, 1.8f);
+            canvasObject.transform.rotation = camera.transform.rotation;
+            canvasObject.transform.localScale = Vector3.one * 0.008f;
+            var canvas = canvasObject.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.WorldSpace;
+            canvas.sortingOrder = 21;
+            canvasObject.AddComponent<GraphicRaycaster>();
+            canvasObject.GetComponent<RectTransform>().sizeDelta = new Vector2(460f, 140f);
+            var purchase = CreateButton(
+                "Expansion Button",
+                canvasObject.transform,
+                "LOCKED AREA",
+                25,
+                new Vector2(0.5f, 0.5f),
+                Vector2.zero,
+                new Vector2(450f, 132f));
+            var label = purchase.GetComponentInChildren<Text>();
+
+            var spot = root.AddComponent<StoreExpansionSpot>();
+            spot.Configure(definition, purchase, label, lockedVisual, unlockedVisual);
             return spot;
         }
 
@@ -202,7 +265,11 @@ namespace SupermarketTycoon.Editor
         private static void CreateGameUi(
             Transform canvas,
             out GameHudView hudView,
+            out BuildingPanelView buildingPanelView,
+            out EmployeeView employeeView,
+            out OfflineIncomeView offlineIncomeView,
             out PauseMenuView pauseMenu,
+            out StatsView statsView,
             out SettingsView settingsView)
         {
             var hud = CreateUiObject("HUD", canvas);
@@ -228,48 +295,144 @@ namespace SupermarketTycoon.Editor
             var xpLabel = CreateText("XP Label", topBar.transform, "0 / 100 XP", 17, FontStyle.Bold, TextAnchor.MiddleCenter, Color.white,
                 new Vector2(0.5f, 0.34f), new Vector2(0.5f, 0.34f), new Vector2(0f, -28f), new Vector2(300f, 30f));
             var customers = CreateText("Customers", topBar.transform, "CUSTOMERS  0", 23, FontStyle.Bold, TextAnchor.MiddleRight, Color.white,
-                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-150f, 0f), new Vector2(300f, 60f));
+                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-365f, 0f), new Vector2(260f, 60f));
+            var rating = CreateText("Rating", topBar.transform, "RATING  3.0 / 5", 22, FontStyle.Bold, TextAnchor.MiddleRight, AccentYellow,
+                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-150f, 0f), new Vector2(250f, 60f));
             var pause = CreateButton("Pause", topBar.transform, "II", 28, new Vector2(1f, 0.5f), new Vector2(-55f, 0f), new Vector2(80f, 76f));
 
+            var objectiveBand = CreateUiObject("Objective Band", hud.transform);
+            SetRect(objectiveBand.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -126f), new Vector2(760f, 64f));
+            objectiveBand.gameObject.AddComponent<Image>().color = new Color(0.96f, 0.99f, 0.97f, 0.94f);
             var objective = CreateText(
                 "Objective",
-                hud.transform,
-                "Build a shelf and a checkout",
-                24,
+                objectiveBand.transform,
+                "GOAL  BUILD A SHELF   0 / 1",
+                22,
                 FontStyle.Bold,
                 TextAnchor.MiddleCenter,
                 new Color(0.04f, 0.2f, 0.2f),
-                new Vector2(0.5f, 1f),
-                new Vector2(0.5f, 1f),
-                new Vector2(0f, -145f),
-                new Vector2(620f, 56f));
-            var objectiveBackground = objective.gameObject.AddComponent<Shadow>();
-            objectiveBackground.effectColor = new Color(1f, 1f, 1f, 0.7f);
-            objectiveBackground.effectDistance = new Vector2(2f, -2f);
+                Vector2.zero,
+                Vector2.one,
+                Vector2.zero,
+                Vector2.zero,
+                true);
 
             var floatingRoot = CreateUiObject("Floating Income Root", hud.transform);
             SetRect(floatingRoot.rectTransform, new Vector2(0.5f, 0.7f), new Vector2(0.5f, 0.7f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(320f, 180f));
             var floatingPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(FloatingIncomePrefabPath)?.GetComponent<FloatingIncomeView>();
 
+            var notification = CreateUiObject("Progress Notification", hud.transform);
+            SetRect(notification.rectTransform, new Vector2(0.5f, 0.72f), new Vector2(0.5f, 0.72f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(560f, 126f));
+            notification.gameObject.AddComponent<Image>().color = new Color(0.025f, 0.13f, 0.14f, 0.96f);
+            var notificationGroup = notification.gameObject.AddComponent<CanvasGroup>();
+            var notificationText = CreateText("Message", notification.transform, "OBJECTIVE COMPLETE", 27, FontStyle.Bold, TextAnchor.MiddleCenter, Color.white,
+                Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, true);
+            notification.gameObject.SetActive(false);
+
             hudView = hud.gameObject.AddComponent<GameHudView>();
-            hudView.Configure(money, level, xp, xpLabel, customers, objective, pause, floatingPrefab, floatingRoot.rectTransform);
+            hudView.Configure(
+                money,
+                level,
+                xp,
+                xpLabel,
+                customers,
+                rating,
+                objective,
+                pause,
+                floatingPrefab,
+                floatingRoot.rectTransform,
+                notification.gameObject,
+                notificationGroup,
+                notificationText);
+
+            buildingPanelView = CreateBuildingPanel(hud.transform);
+            employeeView = CreateEmployeePanel(hud.transform);
+            offlineIncomeView = CreateOfflineIncomePanel(canvas);
 
             pauseMenu = CreatePauseMenu(canvas);
+            statsView = CreateStatsPanel(canvas);
             settingsView = CreateSettingsUi(canvas);
+        }
+
+        private static BuildingPanelView CreateBuildingPanel(Transform parent)
+        {
+            var panel = CreatePanel("Building Panel", parent, new Vector2(440f, 300f));
+            SetRect(panel, new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(1f, 0f), new Vector2(-24f, 24f), new Vector2(440f, 300f));
+            var title = CreateText("Title", panel, "SHELF", 30, FontStyle.Bold, TextAnchor.MiddleLeft, StoreGreen,
+                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(32f, -42f), new Vector2(270f, 54f));
+            var level = CreateText("Level", panel, "LEVEL 1", 21, FontStyle.Bold, TextAnchor.MiddleRight, new Color(0.1f, 0.25f, 0.25f),
+                new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-70f, -42f), new Vector2(130f, 45f));
+            var primary = CreateText("Primary Stat", panel, "INCOME", 22, FontStyle.Normal, TextAnchor.MiddleLeft, new Color(0.08f, 0.2f, 0.2f),
+                new Vector2(0f, 0.56f), new Vector2(0f, 0.56f), new Vector2(32f, 0f), new Vector2(370f, 42f));
+            var secondary = CreateText("Secondary Stat", panel, "CAPACITY", 22, FontStyle.Normal, TextAnchor.MiddleLeft, new Color(0.08f, 0.2f, 0.2f),
+                new Vector2(0f, 0.4f), new Vector2(0f, 0.4f), new Vector2(32f, 0f), new Vector2(370f, 42f));
+            var upgrade = CreateButton("Upgrade", panel, "UPGRADE", 23, new Vector2(0.5f, 0.14f), Vector2.zero, new Vector2(300f, 66f));
+            var close = CreateButton("Close", panel, "X", 20, new Vector2(1f, 1f), new Vector2(-24f, -24f), new Vector2(46f, 46f));
+
+            var view = panel.gameObject.AddComponent<BuildingPanelView>();
+            view.Configure(panel.gameObject, title, level, primary, secondary, upgrade, upgrade.GetComponentInChildren<Text>(), close);
+            panel.gameObject.SetActive(false);
+            return view;
+        }
+
+        private static EmployeeView CreateEmployeePanel(Transform parent)
+        {
+            var panel = CreatePanel("Employee Panel", parent, new Vector2(390f, 190f));
+            SetRect(panel, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(24f, 24f), new Vector2(390f, 190f));
+            var title = CreateText("Title", panel, "CASHIER", 27, FontStyle.Bold, TextAnchor.MiddleLeft, StoreGreen,
+                new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(28f, -38f), new Vector2(320f, 48f));
+            var status = CreateText("Status", panel, "AVAILABLE AT LEVEL 2", 19, FontStyle.Bold, TextAnchor.MiddleLeft, new Color(0.08f, 0.2f, 0.2f),
+                new Vector2(0f, 0.56f), new Vector2(0f, 0.56f), new Vector2(28f, 0f), new Vector2(330f, 38f));
+            var purchase = CreateButton("Purchase", panel, "REQUIRES LEVEL 2", 20, new Vector2(0.5f, 0.2f), Vector2.zero, new Vector2(310f, 58f));
+            var view = panel.gameObject.AddComponent<EmployeeView>();
+            view.Configure(panel.gameObject, title, status, purchase, purchase.GetComponentInChildren<Text>());
+            return view;
+        }
+
+        private static OfflineIncomeView CreateOfflineIncomePanel(Transform canvas)
+        {
+            var root = CreateOverlay("Offline Income Overlay", canvas, new Color(0.01f, 0.04f, 0.05f, 0.82f));
+            var panel = CreatePanel("Welcome Back Panel", root.transform, new Vector2(620f, 430f));
+            CreateText("Title", panel, "WELCOME BACK", 42, FontStyle.Bold, TextAnchor.MiddleCenter, StoreGreen,
+                new Vector2(0.5f, 0.8f), new Vector2(0.5f, 0.8f), Vector2.zero, new Vector2(500f, 70f));
+            var amount = CreateText("Amount", panel, "WHILE YOU WERE AWAY\n+$0", 30, FontStyle.Bold, TextAnchor.MiddleCenter, new Color(0.08f, 0.2f, 0.2f),
+                new Vector2(0.5f, 0.53f), new Vector2(0.5f, 0.53f), Vector2.zero, new Vector2(500f, 120f));
+            var collect = CreateButton("Collect", panel, "COLLECT", 27, new Vector2(0.5f, 0.2f), Vector2.zero, new Vector2(310f, 76f));
+            var view = root.gameObject.AddComponent<OfflineIncomeView>();
+            view.Configure(root.gameObject, amount, collect);
+            root.gameObject.SetActive(false);
+            return view;
         }
 
         private static PauseMenuView CreatePauseMenu(Transform canvas)
         {
             var root = CreateOverlay("Pause Overlay", canvas, new Color(0.01f, 0.04f, 0.05f, 0.78f));
-            var panel = CreatePanel("Pause Panel", root.transform, new Vector2(520f, 580f));
+            var panel = CreatePanel("Pause Panel", root.transform, new Vector2(520f, 650f));
             CreateText("Title", panel.transform, "PAUSED", 48, FontStyle.Bold, TextAnchor.MiddleCenter, StoreGreen,
-                new Vector2(0.5f, 0.82f), new Vector2(0.5f, 0.82f), Vector2.zero, new Vector2(420f, 80f));
-            var resume = CreateButton("Resume", panel.transform, "RESUME", 30, new Vector2(0.5f, 0.58f), Vector2.zero, new Vector2(340f, 90f));
-            var settings = CreateButton("Settings", panel.transform, "SETTINGS", 27, new Vector2(0.5f, 0.4f), Vector2.zero, new Vector2(320f, 82f));
-            var mainMenu = CreateButton("Main Menu", panel.transform, "MAIN MENU", 25, new Vector2(0.5f, 0.22f), Vector2.zero, new Vector2(300f, 78f));
+                new Vector2(0.5f, 0.86f), new Vector2(0.5f, 0.86f), Vector2.zero, new Vector2(420f, 80f));
+            var resume = CreateButton("Resume", panel.transform, "RESUME", 30, new Vector2(0.5f, 0.65f), Vector2.zero, new Vector2(340f, 82f));
+            var stats = CreateButton("Stats", panel.transform, "STATS", 27, new Vector2(0.5f, 0.49f), Vector2.zero, new Vector2(320f, 76f));
+            var settings = CreateButton("Settings", panel.transform, "SETTINGS", 27, new Vector2(0.5f, 0.33f), Vector2.zero, new Vector2(320f, 76f));
+            var mainMenu = CreateButton("Main Menu", panel.transform, "MAIN MENU", 25, new Vector2(0.5f, 0.17f), Vector2.zero, new Vector2(300f, 72f));
 
             var view = root.gameObject.AddComponent<PauseMenuView>();
-            view.Configure(root.gameObject, resume, settings, mainMenu);
+            view.Configure(root.gameObject, resume, stats, settings, mainMenu);
+            root.gameObject.SetActive(false);
+            return view;
+        }
+
+        private static StatsView CreateStatsPanel(Transform canvas)
+        {
+            var root = CreateOverlay("Stats Overlay", canvas, new Color(0.01f, 0.04f, 0.05f, 0.82f));
+            var panel = CreatePanel("Stats Panel", root.transform, new Vector2(720f, 670f));
+            CreateText("Title", panel, "STORE STATS", 44, FontStyle.Bold, TextAnchor.MiddleCenter, StoreGreen,
+                new Vector2(0.5f, 0.86f), new Vector2(0.5f, 0.86f), Vector2.zero, new Vector2(560f, 70f));
+            var stats = CreateText("Stats", panel, "CUSTOMERS SERVED", 25, FontStyle.Bold, TextAnchor.MiddleLeft, new Color(0.08f, 0.2f, 0.2f),
+                new Vector2(0.5f, 0.53f), new Vector2(0.5f, 0.53f), Vector2.zero, new Vector2(580f, 330f));
+            stats.lineSpacing = 1.45f;
+            var back = CreateButton("Back", panel, "BACK", 25, new Vector2(0.5f, 0.12f), Vector2.zero, new Vector2(260f, 68f));
+            var view = root.gameObject.AddComponent<StatsView>();
+            view.Configure(root.gameObject, stats, back);
             root.gameObject.SetActive(false);
             return view;
         }

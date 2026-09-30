@@ -18,6 +18,11 @@ namespace SupermarketTycoon.Buildings
             purchaseRoot = root;
         }
 
+        public void SetVisible(bool visible)
+        {
+            purchaseRoot.SetActive(visible);
+        }
+
         public void ShowAvailable(BuildingDefinition definition, bool affordable)
         {
             purchaseRoot.SetActive(true);
@@ -32,9 +37,11 @@ namespace SupermarketTycoon.Buildings
             label.text = $"LOCKED\nLEVEL {requiredLevel}";
         }
 
-        public void ShowBuilt()
+        public void ShowBuilt(BuildingDefinition definition, int level)
         {
-            purchaseRoot.SetActive(false);
+            purchaseRoot.SetActive(true);
+            buildButton.interactable = true;
+            label.text = $"{definition.DisplayName.ToUpperInvariant()}  LV {level}\nMANAGE";
         }
     }
 }

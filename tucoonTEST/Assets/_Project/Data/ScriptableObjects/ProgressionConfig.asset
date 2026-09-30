@@ -12,4 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26ab878d112096b478d983e176c4a4a2, type: 3}
   m_Name: ProgressionConfig
   m_EditorClassIdentifier: SupermarketTycoon.Runtime::SupermarketTycoon.Progression.ProgressionConfig
-  xpRequiredPerLevel: 64000000fa000000f4010000
+  xpRequiredPerLevel: 64000000c80000005e010000c2010000
+  unlockSummaries:
+  - Shelf and Checkout
+  - Second Shelf and Cashier
+  - Store Expansion and Second Checkout
+  - VIP Customers and Premium Shelf
+  - Maximum Customer Flow

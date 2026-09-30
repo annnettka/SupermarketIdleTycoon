@@ -16,7 +16,29 @@ MonoBehaviour:
   displayName: Checkout
   type: 1
   prefab: {fileID: 4517535598662702020, guid: 2e6c90d2e56457140a31389c8a3a103e, type: 3}
-  cost: 150
+  cost: 225
   requiredLevel: 3
   capacity: 3
   incomeMultiplier: 1
+  upgradeLevels:
+  - level: 1
+    upgradeCost: 0
+    requiredPlayerLevel: 3
+    capacity: 3
+    incomeMultiplier: 1
+    interactionDuration: 2.5
+    visualScale: 1
+  - level: 2
+    upgradeCost: 225
+    requiredPlayerLevel: 3
+    capacity: 4
+    incomeMultiplier: 1
+    interactionDuration: 1.8
+    visualScale: 1.04
+  - level: 3
+    upgradeCost: 400
+    requiredPlayerLevel: 4
+    capacity: 5
+    incomeMultiplier: 1
+    interactionDuration: 1.2
+    visualScale: 1.08

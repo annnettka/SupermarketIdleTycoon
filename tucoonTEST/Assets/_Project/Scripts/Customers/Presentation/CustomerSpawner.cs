@@ -19,10 +19,12 @@ namespace SupermarketTycoon.Customers
         private StationRegistry stations;
         private EconomyService economy;
         private ProgressionService progression;
+        private StoreRatingService rating;
         private PauseService pause;
         private CustomerConfig config;
+        private CustomerProfileDefinition[] profiles;
         private int xpReward;
-        private int maximumActive;
+        private int fallbackMaximumActive;
         private float spawnInterval;
         private float spawnTimer;
         private int activeCount;
@@ -30,6 +32,7 @@ namespace SupermarketTycoon.Customers
 
         public event Action<int> ActiveCountChanged;
         public event Action<Vector3, int> PaymentCompleted;
+        public event Action<Vector3> CustomerLost;
 
         public void Configure(CustomerAgent prefab, Transform spawn, Transform exit)
         {
@@ -42,8 +45,10 @@ namespace SupermarketTycoon.Customers
             StationRegistry stationRegistry,
             EconomyService economyService,
             ProgressionService progressionService,
+            StoreRatingService ratingService,
             PauseService pauseService,
             CustomerConfig customerConfig,
+            CustomerProfileDefinition[] customerProfiles,
             int rewardXp,
             float interval,
             int maxActive)
@@ -51,21 +56,24 @@ namespace SupermarketTycoon.Customers
             stations = stationRegistry;
             economy = economyService;
             progression = progressionService;
+            rating = ratingService;
             pause = pauseService;
             config = customerConfig;
+            profiles = customerProfiles;
             xpReward = rewardXp;
             spawnInterval = Mathf.Max(0.1f, interval);
-            maximumActive = Mathf.Clamp(maxActive, 1, 8);
+            fallbackMaximumActive = Mathf.Max(1, maxActive);
             spawnTimer = 0.25f;
 
+            var poolSize = Mathf.Max(fallbackMaximumActive, config.MaxConfiguredActiveCustomers);
             pool = new ObjectPool<CustomerAgent>(
                 CreateCustomer,
                 OnTakeFromPool,
                 OnReturnedToPool,
                 OnDestroyPooledCustomer,
                 true,
-                maximumActive,
-                maximumActive);
+                poolSize,
+                poolSize);
             initialized = true;
         }
 
@@ -79,6 +87,9 @@ namespace SupermarketTycoon.Customers
 
         private void Update()
         {
+            var maximumActive = config != null
+                ? config.GetMaximumActiveCustomers(progression.CurrentLevel, fallbackMaximumActive)
+                : fallbackMaximumActive;
             if (!initialized || pause.IsPaused || !stations.IsOperational || activeCount >= maximumActive)
             {
                 return;
@@ -90,7 +101,7 @@ namespace SupermarketTycoon.Customers
                 return;
             }
 
-            spawnTimer = spawnInterval;
+            spawnTimer = spawnInterval * (rating != null ? rating.TrafficIntervalMultiplier : 1f);
             pool.Get();
         }
 
@@ -110,6 +121,7 @@ namespace SupermarketTycoon.Customers
 
             var runtimeContext = new CustomerRuntimeContext(
                 config,
+                ChooseProfile(),
                 stations,
                 economy,
                 progression,
@@ -117,7 +129,8 @@ namespace SupermarketTycoon.Customers
                 exitPoint,
                 xpReward,
                 ReleaseCustomer,
-                OnPaymentCompleted);
+                OnPaymentCompleted,
+                OnCustomerLost);
             customer.Begin(runtimeContext);
         }
 
@@ -148,6 +161,52 @@ namespace SupermarketTycoon.Customers
         private void OnPaymentCompleted(Vector3 position, int amount)
         {
             PaymentCompleted?.Invoke(position, amount);
+        }
+
+        private void OnCustomerLost(Vector3 position)
+        {
+            CustomerLost?.Invoke(position);
+        }
+
+        private CustomerProfileDefinition ChooseProfile()
+        {
+            if (profiles == null || profiles.Length == 0)
+            {
+                return null;
+            }
+
+            var totalWeight = 0f;
+            for (var i = 0; i < profiles.Length; i++)
+            {
+                var profile = profiles[i];
+                if (profile != null && progression.CurrentLevel >= profile.RequiredLevel)
+                {
+                    totalWeight += profile.SpawnWeight;
+                }
+            }
+
+            if (totalWeight <= 0f)
+            {
+                return profiles[0];
+            }
+
+            var roll = UnityEngine.Random.value * totalWeight;
+            for (var i = 0; i < profiles.Length; i++)
+            {
+                var profile = profiles[i];
+                if (profile == null || progression.CurrentLevel < profile.RequiredLevel)
+                {
+                    continue;
+                }
+
+                roll -= profile.SpawnWeight;
+                if (roll <= 0f)
+                {
+                    return profile;
+                }
+            }
+
+            return profiles[0];
         }
 
         private Vector3 GetSpawnPosition()

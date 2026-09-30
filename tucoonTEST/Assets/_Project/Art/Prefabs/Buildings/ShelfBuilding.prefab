@@ -41,6 +41,7 @@ GameObject:
   m_Component:
   - component: {fileID: 542681339117083448}
   - component: {fileID: 8578890355506104563}
+  - component: {fileID: 1567519377728342271}
   m_Layer: 0
   m_Name: ShelfBuilding
   m_TagString: Untagged
@@ -80,6 +81,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: SupermarketTycoon.Runtime::SupermarketTycoon.Buildings.ShelfStation
   interactionPoint: {fileID: 7018518809845854653}
   shoppingDuration: 2.25
+--- !u!114 &1567519377728342271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5586953289062961552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c112baff8964de42b93a0ccdb0fd577, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SupermarketTycoon.Runtime::SupermarketTycoon.Buildings.BuildingUpgradeFeedback
 --- !u!1001 &271318419243199648
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -92,10 +105,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Purchase FX
       objectReference: {fileID: 0}
-    - target: {fileID: 4653221738633499635, guid: adac76f188f07674a980b9ef4f2086e2, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 4636f392eb1e46944a21c9f644dfe475, type: 2}
     - target: {fileID: 6940807226288942901, guid: adac76f188f07674a980b9ef4f2086e2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace SupermarketTycoon.Economy
 {
@@ -15,10 +16,22 @@ namespace SupermarketTycoon.Economy
         public int CustomerPayment { get; }
         public event Action<int> IncomeAdded;
 
-        public void AddCustomerIncome()
+        public int AddCustomerIncome(float multiplier = 1f)
         {
-            wallet.Add(CustomerPayment);
-            IncomeAdded?.Invoke(CustomerPayment);
+            var amount = Mathf.Max(1, Mathf.RoundToInt(CustomerPayment * Mathf.Max(0.01f, multiplier)));
+            AddIncome(amount);
+            return amount;
+        }
+
+        public void AddIncome(int amount)
+        {
+            if (amount <= 0)
+            {
+                return;
+            }
+
+            wallet.Add(amount);
+            IncomeAdded?.Invoke(amount);
         }
     }
 }

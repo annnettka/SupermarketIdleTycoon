@@ -1,5 +1,3 @@
-using SupermarketTycoon.Buildings;
-using SupermarketTycoon.Checkout;
 using UnityEngine;
 
 namespace SupermarketTycoon.Customers
@@ -86,7 +84,7 @@ namespace SupermarketTycoon.Customers
                 return;
             }
 
-            Customer.MoveTo(shelf.InteractionPoint.position);
+            Customer.MoveTo(shelf.GetInteractionPosition(Customer));
             if (Customer.HasArrived)
             {
                 Customer.ChangeState(new CustomerShoppingState(Customer));
@@ -97,7 +95,7 @@ namespace SupermarketTycoon.Customers
         {
             if (Customer.Shelf != null)
             {
-                Customer.MoveTo(Customer.Shelf.InteractionPoint.position);
+                Customer.MoveTo(Customer.Shelf.GetInteractionPosition(Customer));
             }
         }
     }
@@ -113,9 +111,10 @@ namespace SupermarketTycoon.Customers
         public override void Enter()
         {
             Customer.StopMoving();
-            remaining = Customer.Shelf != null
+            Customer.CaptureShelfValue();
+            remaining = (Customer.Shelf != null
                 ? Customer.Shelf.ShoppingDuration
-                : Context.Config.ShoppingDuration;
+                : Context.Config.ShoppingDuration) * Context.ShoppingTimeMultiplier;
         }
 
         public override void Tick(float deltaTime)
@@ -166,8 +165,15 @@ namespace SupermarketTycoon.Customers
 
     internal sealed class CustomerQueueState : CustomerState
     {
+        private float patienceRemaining;
+
         public CustomerQueueState(CustomerAgent customer) : base(customer)
         {
+        }
+
+        public override void Enter()
+        {
+            patienceRemaining = Context.QueuePatience;
         }
 
         public override void Tick(float deltaTime)
@@ -177,6 +183,15 @@ namespace SupermarketTycoon.Customers
             {
                 Customer.LeaveCheckout();
                 Customer.ChangeState(new CustomerMoveToCheckoutState(Customer));
+                return;
+            }
+
+            patienceRemaining -= deltaTime;
+            if (patienceRemaining <= 0f)
+            {
+                Customer.LeaveCheckout();
+                Context.CustomerLost?.Invoke(Customer.transform.position);
+                Customer.ChangeState(new CustomerExitState(Customer));
                 return;
             }
 
@@ -207,7 +222,9 @@ namespace SupermarketTycoon.Customers
         public override void Enter()
         {
             Customer.StopMoving();
-            remaining = Context.Config.PaymentDuration;
+            remaining = Customer.Checkout != null
+                ? Customer.Checkout.ProcessingDuration
+                : Context.Config.PaymentDuration;
         }
 
         public override void Tick(float deltaTime)
@@ -225,9 +242,9 @@ namespace SupermarketTycoon.Customers
                 return;
             }
 
-            Context.Economy.AddCustomerIncome();
+            var amount = Context.Economy.AddCustomerIncome(Customer.PaymentMultiplier);
             Context.Progression.AddXp(Context.XpReward);
-            Context.PaymentCompleted?.Invoke(Customer.transform.position, Context.Economy.CustomerPayment);
+            Context.PaymentCompleted?.Invoke(Customer.transform.position, amount);
             Customer.CompleteCheckout();
             Customer.ChangeState(new CustomerExitState(Customer));
         }

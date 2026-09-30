@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: GameConfig
   m_EditorClassIdentifier: SupermarketTycoon.Runtime::SupermarketTycoon.Core.GameConfig
   startingMoney: 150
-  customerPayment: 15
+  customerPayment: 20
   customerXpReward: 10
   spawnInterval: 2.75
-  maximumActiveCustomers: 6
+  maximumActiveCustomers: 10
   minimumLoadingDuration: 0.3

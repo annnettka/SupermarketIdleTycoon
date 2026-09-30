@@ -6,6 +6,9 @@ using SupermarketTycoon.Buildings;
 using SupermarketTycoon.Checkout;
 using SupermarketTycoon.Core;
 using SupermarketTycoon.Customers;
+using SupermarketTycoon.Employees;
+using SupermarketTycoon.Expansion;
+using SupermarketTycoon.Objectives;
 using SupermarketTycoon.UI;
 using Unity.AI.Navigation;
 using UnityEditor;
@@ -34,14 +37,22 @@ namespace SupermarketTycoon.Editor
         private const string GameConfigPath = DataRoot + "/GameConfig.asset";
         private const string CustomerConfigPath = DataRoot + "/CustomerConfig.asset";
         private const string ProgressionConfigPath = DataRoot + "/ProgressionConfig.asset";
+        private const string ObjectiveConfigPath = DataRoot + "/ObjectiveConfig.asset";
+        private const string EmployeeDefinitionPath = DataRoot + "/CashierEmployee.asset";
+        private const string StoreExpansionDefinitionPath = DataRoot + "/StoreExpansion.asset";
+        private const string NormalCustomerProfilePath = DataRoot + "/CustomerNormal.asset";
+        private const string ImpatientCustomerProfilePath = DataRoot + "/CustomerImpatient.asset";
+        private const string VipCustomerProfilePath = DataRoot + "/CustomerVip.asset";
         private const string ShelfDefinitionPath = DataRoot + "/ShelfBuilding.asset";
         private const string CheckoutDefinitionPath = DataRoot + "/CheckoutBuilding.asset";
         private const string ShelfExpansionDefinitionPath = DataRoot + "/ShelfExpansion.asset";
         private const string CheckoutExpansionDefinitionPath = DataRoot + "/CheckoutExpansion.asset";
+        private const string PremiumShelfDefinitionPath = DataRoot + "/PremiumShelf.asset";
 
         private const string ShelfPrefabPath = PrefabRoot + "/Buildings/ShelfBuilding.prefab";
         private const string CheckoutPrefabPath = PrefabRoot + "/Buildings/CheckoutBuilding.prefab";
         private const string CustomerPrefabPath = PrefabRoot + "/Characters/Customer.prefab";
+        private const string CashierPrefabPath = PrefabRoot + "/Characters/Cashier.prefab";
         private const string FloatingIncomePrefabPath = PrefabRoot + "/UI/FloatingIncome.prefab";
         private const string PurchaseFxPrefabPath = PrefabRoot + "/VFX/BuildingPurchaseFX.prefab";
 
@@ -120,6 +131,11 @@ namespace SupermarketTycoon.Editor
                 var gameConfig = LoadOrCreateConfig<GameConfig>(GameConfigPath);
                 var customerConfig = LoadOrCreateConfig<CustomerConfig>(CustomerConfigPath);
                 var progressionConfig = LoadOrCreateConfig<SupermarketTycoon.Progression.ProgressionConfig>(ProgressionConfigPath);
+                ConfigureGameplayConfigs(gameConfig, customerConfig, progressionConfig);
+                var objectiveConfig = CreateObjectiveConfig();
+                var employeeDefinition = CreateEmployeeDefinition();
+                var expansionDefinition = CreateStoreExpansionDefinition();
+                var customerProfiles = CreateCustomerProfiles();
 
                 CreateProjectMaterials();
                 MaterialRepairTool.EnsureFixedMaterials();
@@ -127,6 +143,7 @@ namespace SupermarketTycoon.Editor
                 CreateShelfPrefab();
                 CreateCheckoutPrefab();
                 CreateCustomerPrefab();
+                CreateCashierPrefab();
                 CreateFloatingIncomePrefab();
 
                 var shelf = CreateBuildingDefinition(
@@ -137,7 +154,13 @@ namespace SupermarketTycoon.Editor
                     ShelfPrefabPath,
                     50,
                     1,
-                    1);
+                    1,
+                    new[]
+                    {
+                        new BuildingLevelDefinition(1, 0, 1, 1, 1f, 2.25f, 1f),
+                        new BuildingLevelDefinition(2, 100, 1, 2, 1.25f, 1.9f, 1.04f),
+                        new BuildingLevelDefinition(3, 250, 4, 3, 1.5f, 1.6f, 1.08f)
+                    });
                 var checkout = CreateBuildingDefinition(
                     CheckoutDefinitionPath,
                     "checkout.basic",
@@ -146,25 +169,57 @@ namespace SupermarketTycoon.Editor
                     CheckoutPrefabPath,
                     100,
                     1,
-                    3);
+                    3,
+                    new[]
+                    {
+                        new BuildingLevelDefinition(1, 0, 1, 3, 1f, 2.5f, 1f),
+                        new BuildingLevelDefinition(2, 150, 1, 4, 1f, 1.8f, 1.04f),
+                        new BuildingLevelDefinition(3, 350, 3, 5, 1f, 1.2f, 1.08f)
+                    });
                 var shelfExpansion = CreateBuildingDefinition(
                     ShelfExpansionDefinitionPath,
                     "shelf.expansion",
                     "Shelf",
                     BuildingType.Shelf,
                     ShelfPrefabPath,
-                    75,
+                    150,
                     2,
-                    1);
+                    1,
+                    new[]
+                    {
+                        new BuildingLevelDefinition(1, 0, 2, 1, 1f, 2.25f, 1f),
+                        new BuildingLevelDefinition(2, 175, 2, 2, 1.25f, 1.9f, 1.04f),
+                        new BuildingLevelDefinition(3, 275, 4, 3, 1.5f, 1.6f, 1.08f)
+                    });
                 var checkoutExpansion = CreateBuildingDefinition(
                     CheckoutExpansionDefinitionPath,
                     "checkout.expansion",
                     "Checkout",
                     BuildingType.Checkout,
                     CheckoutPrefabPath,
-                    150,
+                    225,
                     3,
-                    3);
+                    3,
+                    new[]
+                    {
+                        new BuildingLevelDefinition(1, 0, 3, 3, 1f, 2.5f, 1f),
+                        new BuildingLevelDefinition(2, 225, 3, 4, 1f, 1.8f, 1.04f),
+                        new BuildingLevelDefinition(3, 400, 4, 5, 1f, 1.2f, 1.08f)
+                    });
+                var premiumShelf = CreateBuildingDefinition(
+                    PremiumShelfDefinitionPath,
+                    "shelf.premium",
+                    "Premium Shelf",
+                    BuildingType.Shelf,
+                    ShelfPrefabPath,
+                    350,
+                    4,
+                    2,
+                    new[]
+                    {
+                        new BuildingLevelDefinition(1, 0, 4, 2, 2f, 2f, 1.06f),
+                        new BuildingLevelDefinition(2, 450, 5, 3, 2.5f, 1.6f, 1.12f)
+                    });
 
                 BuildBootstrapScene(gameConfig);
                 BuildMainMenuScene();
@@ -175,7 +230,12 @@ namespace SupermarketTycoon.Editor
                     shelf,
                     checkout,
                     shelfExpansion,
-                    checkoutExpansion);
+                    checkoutExpansion,
+                    premiumShelf,
+                    customerProfiles,
+                    objectiveConfig,
+                    employeeDefinition,
+                    expansionDefinition);
                 ConfigureBuildSettings();
                 ConfigurePlayModeStartScene();
 
@@ -225,6 +285,155 @@ namespace SupermarketTycoon.Editor
             return created;
         }
 
+        private static void ConfigureGameplayConfigs(
+            GameConfig gameConfig,
+            CustomerConfig customerConfig,
+            SupermarketTycoon.Progression.ProgressionConfig progressionConfig)
+        {
+            var game = new SerializedObject(gameConfig);
+            game.FindProperty("startingMoney").intValue = 150;
+            game.FindProperty("customerPayment").intValue = 20;
+            game.FindProperty("customerXpReward").intValue = 10;
+            game.FindProperty("spawnInterval").floatValue = 2.75f;
+            game.FindProperty("maximumActiveCustomers").intValue = 10;
+            game.ApplyModifiedPropertiesWithoutUndo();
+
+            var customer = new SerializedObject(customerConfig);
+            SetIntArray(customer.FindProperty("maximumActiveByLevel"), 3, 4, 6, 8, 10);
+            customer.ApplyModifiedPropertiesWithoutUndo();
+
+            var progression = new SerializedObject(progressionConfig);
+            SetIntArray(progression.FindProperty("xpRequiredPerLevel"), 100, 200, 350, 450);
+            var unlocks = progression.FindProperty("unlockSummaries");
+            var values = new[]
+            {
+                "Shelf and Checkout",
+                "Second Shelf and Cashier",
+                "Store Expansion and Second Checkout",
+                "VIP Customers and Premium Shelf",
+                "Maximum Customer Flow"
+            };
+            unlocks.arraySize = values.Length;
+            for (var i = 0; i < values.Length; i++)
+            {
+                unlocks.GetArrayElementAtIndex(i).stringValue = values[i];
+            }
+
+            progression.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(gameConfig);
+            EditorUtility.SetDirty(customerConfig);
+            EditorUtility.SetDirty(progressionConfig);
+        }
+
+        private static ObjectiveConfig CreateObjectiveConfig()
+        {
+            var config = LoadOrCreateConfig<ObjectiveConfig>(ObjectiveConfigPath);
+            config.Configure(new[]
+            {
+                new ObjectiveDefinition(ObjectiveType.BuildBuilding, "Build a Shelf", 1, "shelf.basic", 0, 20),
+                new ObjectiveDefinition(ObjectiveType.BuildBuilding, "Build a Checkout", 1, "checkout.basic", 30, 20),
+                new ObjectiveDefinition(ObjectiveType.ServeCustomers, "Serve Customers", 5, null, 100, 30),
+                new ObjectiveDefinition(ObjectiveType.UpgradeBuilding, "Upgrade a Shelf", 1, "shelf.basic", 0, 30),
+                new ObjectiveDefinition(ObjectiveType.ReachLevel, "Reach Level 2", 2, null, 75, 0),
+                new ObjectiveDefinition(ObjectiveType.BuyEmployee, "Hire a Cashier", 1, "employee.cashier", 75, 30),
+                new ObjectiveDefinition(ObjectiveType.EarnMoney, "Earn $500", 500, null, 100, 40),
+                new ObjectiveDefinition(ObjectiveType.BuyExpansion, "Unlock Store Expansion", 1, "expansion.main", 150, 50),
+                new ObjectiveDefinition(ObjectiveType.ServeCustomers, "Serve 25 Customers", 25, null, 200, 75),
+                new ObjectiveDefinition(ObjectiveType.ReachRating, "Reach Store Rating 4.0", 40, null, 200, 100),
+                new ObjectiveDefinition(ObjectiveType.ReachLevel, "Reach Level 5", 5, null, 500, 0)
+            });
+            EditorUtility.SetDirty(config);
+            return config;
+        }
+
+        private static EmployeeDefinition CreateEmployeeDefinition()
+        {
+            var definition = LoadOrCreateConfig<EmployeeDefinition>(EmployeeDefinitionPath);
+            var serialized = new SerializedObject(definition);
+            serialized.FindProperty("id").stringValue = "employee.cashier";
+            serialized.FindProperty("displayName").stringValue = "Cashier";
+            var levels = serialized.FindProperty("levels");
+            var values = new[]
+            {
+                new EmployeeLevelDefinition(1, 300, 2, 0.2f),
+                new EmployeeLevelDefinition(2, 450, 3, 0.35f),
+                new EmployeeLevelDefinition(3, 700, 4, 0.5f)
+            };
+            levels.arraySize = values.Length;
+            for (var i = 0; i < values.Length; i++)
+            {
+                var element = levels.GetArrayElementAtIndex(i);
+                element.FindPropertyRelative("level").intValue = values[i].Level;
+                element.FindPropertyRelative("cost").intValue = values[i].Cost;
+                element.FindPropertyRelative("requiredPlayerLevel").intValue = values[i].RequiredPlayerLevel;
+                element.FindPropertyRelative("checkoutSpeedBonus").floatValue = values[i].CheckoutSpeedBonus;
+            }
+
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(definition);
+            return definition;
+        }
+
+        private static StoreExpansionDefinition CreateStoreExpansionDefinition()
+        {
+            var definition = LoadOrCreateConfig<StoreExpansionDefinition>(StoreExpansionDefinitionPath);
+            var serialized = new SerializedObject(definition);
+            serialized.FindProperty("id").stringValue = "expansion.main";
+            serialized.FindProperty("displayName").stringValue = "Store Expansion";
+            serialized.FindProperty("cost").intValue = 500;
+            serialized.FindProperty("requiredLevel").intValue = 3;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(definition);
+            return definition;
+        }
+
+        private static CustomerProfileDefinition[] CreateCustomerProfiles()
+        {
+            return new[]
+            {
+                CreateCustomerProfile(NormalCustomerProfilePath, "customer.normal", "Normal", 1f, 1f, 1f, 15f, 0.65f, 1, Color.white),
+                CreateCustomerProfile(ImpatientCustomerProfilePath, "customer.impatient", "Impatient", 1.18f, 0.8f, 0.85f, 8f, 0.35f, 1, new Color(1f, 0.72f, 0.6f)),
+                CreateCustomerProfile(VipCustomerProfilePath, "customer.vip", "VIP", 0.9f, 1.1f, 2f, 20f, 0.25f, 4, new Color(1f, 0.88f, 0.35f))
+            };
+        }
+
+        private static CustomerProfileDefinition CreateCustomerProfile(
+            string path,
+            string id,
+            string displayName,
+            float movement,
+            float shopping,
+            float payment,
+            float patience,
+            float weight,
+            int requiredLevel,
+            Color color)
+        {
+            var profile = LoadOrCreateConfig<CustomerProfileDefinition>(path);
+            var serialized = new SerializedObject(profile);
+            serialized.FindProperty("id").stringValue = id;
+            serialized.FindProperty("displayName").stringValue = displayName;
+            serialized.FindProperty("movementSpeedMultiplier").floatValue = movement;
+            serialized.FindProperty("shoppingTimeMultiplier").floatValue = shopping;
+            serialized.FindProperty("paymentMultiplier").floatValue = payment;
+            serialized.FindProperty("queuePatience").floatValue = patience;
+            serialized.FindProperty("spawnWeight").floatValue = weight;
+            serialized.FindProperty("requiredLevel").intValue = requiredLevel;
+            serialized.FindProperty("presentationColor").colorValue = color;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(profile);
+            return profile;
+        }
+
+        private static void SetIntArray(SerializedProperty property, params int[] values)
+        {
+            property.arraySize = values.Length;
+            for (var i = 0; i < values.Length; i++)
+            {
+                property.GetArrayElementAtIndex(i).intValue = values[i];
+            }
+        }
+
         private static BuildingDefinition CreateBuildingDefinition(
             string path,
             string id,
@@ -233,7 +442,8 @@ namespace SupermarketTycoon.Editor
             string prefabPath,
             int cost,
             int requiredLevel,
-            int capacity)
+            int capacity,
+            BuildingLevelDefinition[] levels)
         {
             var definition = AssetDatabase.LoadAssetAtPath<BuildingDefinition>(path);
             if (definition == null)
@@ -251,6 +461,20 @@ namespace SupermarketTycoon.Editor
             serialized.FindProperty("requiredLevel").intValue = requiredLevel;
             serialized.FindProperty("capacity").intValue = capacity;
             serialized.FindProperty("incomeMultiplier").floatValue = 1f;
+            var levelsProperty = serialized.FindProperty("upgradeLevels");
+            levelsProperty.arraySize = levels != null ? levels.Length : 0;
+            for (var i = 0; i < levelsProperty.arraySize; i++)
+            {
+                var element = levelsProperty.GetArrayElementAtIndex(i);
+                var level = levels[i];
+                element.FindPropertyRelative("level").intValue = level.Level;
+                element.FindPropertyRelative("upgradeCost").intValue = level.UpgradeCost;
+                element.FindPropertyRelative("requiredPlayerLevel").intValue = level.RequiredPlayerLevel;
+                element.FindPropertyRelative("capacity").intValue = level.Capacity;
+                element.FindPropertyRelative("incomeMultiplier").floatValue = level.IncomeMultiplier;
+                element.FindPropertyRelative("interactionDuration").floatValue = level.InteractionDuration;
+                element.FindPropertyRelative("visualScale").floatValue = level.VisualScale;
+            }
             serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(definition);
             return definition;
@@ -272,6 +496,7 @@ namespace SupermarketTycoon.Editor
                 point.localPosition = new Vector3(0f, 0f, -1.35f);
                 var station = root.AddComponent<ShelfStation>();
                 station.Configure(point, 2.25f);
+                root.AddComponent<BuildingUpgradeFeedback>();
                 AddPurchaseFx(root.transform);
                 PrefabUtility.SaveAsPrefabAsset(root, ShelfPrefabPath);
             }
@@ -292,7 +517,7 @@ namespace SupermarketTycoon.Editor
                     CreateFallbackPrimitive(root.transform, PrimitiveType.Cube, "Checkout Visual", new Vector3(2.5f, 1.1f, 1f), CheckoutBlue);
                 }
 
-                var points = new Transform[3];
+                var points = new Transform[5];
                 for (var i = 0; i < points.Length; i++)
                 {
                     points[i] = new GameObject($"QueuePoint{i}").transform;
@@ -302,6 +527,7 @@ namespace SupermarketTycoon.Editor
 
                 var station = root.AddComponent<CheckoutStation>();
                 station.Configure(points);
+                root.AddComponent<BuildingUpgradeFeedback>();
                 AddPurchaseFx(root.transform);
                 PrefabUtility.SaveAsPrefabAsset(root, CheckoutPrefabPath);
             }
@@ -338,6 +564,31 @@ namespace SupermarketTycoon.Editor
                 }
 
                 PrefabUtility.SaveAsPrefabAsset(root, CustomerPrefabPath);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(root);
+            }
+        }
+
+        private static void CreateCashierPrefab()
+        {
+            var root = new GameObject("CashierEmployee");
+            try
+            {
+                var source = AddNestedVisual(root.transform, SourceCharacterPath, "Cashier Visual");
+                if (source != null)
+                {
+                    source.transform.localScale = Vector3.one * 0.82f;
+                    source.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+                }
+                else
+                {
+                    var fallback = CreateFallbackPrimitive(root.transform, PrimitiveType.Capsule, "Cashier Visual", new Vector3(0.7f, 0.9f, 0.7f), AccentYellow);
+                    fallback.transform.localPosition = Vector3.up * 0.9f;
+                }
+
+                PrefabUtility.SaveAsPrefabAsset(root, CashierPrefabPath);
             }
             finally
             {

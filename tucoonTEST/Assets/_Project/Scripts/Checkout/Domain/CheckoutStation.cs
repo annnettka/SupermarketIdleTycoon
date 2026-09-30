@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SupermarketTycoon.Buildings;
 using SupermarketTycoon.Customers;
 using UnityEngine;
 
@@ -8,22 +9,38 @@ namespace SupermarketTycoon.Checkout
     {
         [SerializeField] private Transform[] queuePoints;
 
-        private readonly List<CustomerAgent> queue = new List<CustomerAgent>();
+        private readonly List<CustomerAgent> queue = new List<CustomerAgent>(5);
+        private int queueCapacity = 3;
+        private float baseProcessingDuration = 2.5f;
+        private float employeeSpeedMultiplier = 1f;
 
         public bool HasSpace
         {
             get
             {
                 RemoveMissingCustomers();
-                return queuePoints != null && queue.Count < queuePoints.Length;
+                return queuePoints != null && queue.Count < Mathf.Min(queueCapacity, queuePoints.Length);
             }
         }
 
         public int Count => queue.Count;
+        public int QueueCapacity => queueCapacity;
+        public float ProcessingDuration => baseProcessingDuration / Mathf.Max(0.1f, employeeSpeedMultiplier);
 
         public void Configure(Transform[] points)
         {
             queuePoints = points;
+        }
+
+        public void ApplyLevel(BuildingLevelDefinition level)
+        {
+            queueCapacity = level.Capacity;
+            baseProcessingDuration = level.InteractionDuration;
+        }
+
+        public void SetEmployeeSpeedMultiplier(float multiplier)
+        {
+            employeeSpeedMultiplier = Mathf.Max(0.1f, multiplier);
         }
 
         public bool TryJoin(CustomerAgent customer)

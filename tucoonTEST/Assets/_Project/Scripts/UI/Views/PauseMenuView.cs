@@ -7,17 +7,20 @@ namespace SupermarketTycoon.UI
     {
         [SerializeField] private GameObject root;
         [SerializeField] private Button resumeButton;
+        [SerializeField] private Button statsButton;
         [SerializeField] private Button settingsButton;
         [SerializeField] private Button mainMenuButton;
 
         public Button ResumeButton => resumeButton;
+        public Button StatsButton => statsButton;
         public Button SettingsButton => settingsButton;
         public Button MainMenuButton => mainMenuButton;
 
-        public void Configure(GameObject menuRoot, Button resume, Button settings, Button mainMenu)
+        public void Configure(GameObject menuRoot, Button resume, Button stats, Button settings, Button mainMenu)
         {
             root = menuRoot;
             resumeButton = resume;
+            statsButton = stats;
             settingsButton = settings;
             mainMenuButton = mainMenu;
         }

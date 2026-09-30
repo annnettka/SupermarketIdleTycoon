@@ -9,14 +9,20 @@ namespace SupermarketTycoon.Customers
     [RequireComponent(typeof(NavMeshAgent))]
     public sealed class CustomerAgent : MonoBehaviour
     {
+        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+        private static readonly int ColorId = Shader.PropertyToID("_Color");
+
         [SerializeField] private NavMeshAgent navigationAgent;
 
         private ICustomerState state;
         private bool warnedAboutNavMesh;
+        private Renderer[] renderers;
+        private MaterialPropertyBlock propertyBlock;
 
         internal CustomerRuntimeContext Context { get; private set; }
         internal ShelfStation Shelf { get; private set; }
         internal CheckoutStation Checkout { get; private set; }
+        internal float PaymentMultiplier { get; private set; } = 1f;
 
         internal bool HasArrived
         {
@@ -42,11 +48,13 @@ namespace SupermarketTycoon.Customers
             warnedAboutNavMesh = false;
             Shelf = null;
             Checkout = null;
+            PaymentMultiplier = Context.ProfilePaymentMultiplier;
 
-            navigationAgent.speed = Context.Config.MovementSpeed;
+            navigationAgent.speed = Context.Config.MovementSpeed * Context.MovementSpeedMultiplier;
             navigationAgent.acceleration = Context.Config.Acceleration;
             navigationAgent.angularSpeed = Context.Config.AngularSpeed;
             navigationAgent.stoppingDistance = Context.Config.StoppingDistance;
+            ApplyProfilePresentation();
             ChangeState(new CustomerSpawnState(this));
         }
 
@@ -64,6 +72,12 @@ namespace SupermarketTycoon.Customers
             navigationAgent != null &&
             navigationAgent.enabled &&
             navigationAgent.isOnNavMesh;
+
+        private void Awake()
+        {
+            renderers = GetComponentsInChildren<Renderer>(true);
+            propertyBlock = new MaterialPropertyBlock();
+        }
 
         private void Reset()
         {
@@ -128,6 +142,11 @@ namespace SupermarketTycoon.Customers
             Shelf = shelf;
         }
 
+        internal void CaptureShelfValue()
+        {
+            PaymentMultiplier = Context.ProfilePaymentMultiplier * (Shelf != null ? Shelf.IncomeMultiplier : 1f);
+        }
+
         internal void ReleaseShelf()
         {
             if (Shelf != null)
@@ -157,6 +176,29 @@ namespace SupermarketTycoon.Customers
             {
                 Checkout.Leave(this);
                 Checkout = null;
+            }
+        }
+
+        private void ApplyProfilePresentation()
+        {
+            if (renderers == null || propertyBlock == null)
+            {
+                return;
+            }
+
+            var color = Context.Profile != null ? Context.Profile.PresentationColor : Color.white;
+            for (var i = 0; i < renderers.Length; i++)
+            {
+                var renderer = renderers[i];
+                if (renderer == null)
+                {
+                    continue;
+                }
+
+                renderer.GetPropertyBlock(propertyBlock);
+                propertyBlock.SetColor(BaseColorId, color);
+                propertyBlock.SetColor(ColorId, color);
+                renderer.SetPropertyBlock(propertyBlock);
             }
         }
     }

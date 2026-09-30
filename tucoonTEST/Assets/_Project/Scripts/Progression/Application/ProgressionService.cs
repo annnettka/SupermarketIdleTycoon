@@ -9,17 +9,24 @@ namespace SupermarketTycoon.Progression
         public ProgressionService(ProgressionConfig config, int currentLevel, int currentXp)
         {
             this.config = config ?? throw new ArgumentNullException(nameof(config));
-            CurrentLevel = Math.Max(1, currentLevel);
+            CurrentLevel = Math.Min(config.MaxLevel, Math.Max(1, currentLevel));
             CurrentXp = Math.Max(0, currentXp);
             NormalizeLoadedProgress();
         }
 
         public int CurrentLevel { get; private set; }
         public int CurrentXp { get; private set; }
+        public int MaxLevel => config.MaxLevel;
         public int XpToNextLevel => config.GetRequiredXp(CurrentLevel);
+        public bool IsMaxLevel => CurrentLevel >= MaxLevel;
 
         public event Action<int> LevelChanged;
         public event Action<int, int> XpChanged;
+
+        public string GetUnlockSummary(int level)
+        {
+            return config.GetUnlockSummary(level);
+        }
 
         public void AddXp(int amount)
         {
@@ -28,12 +35,22 @@ namespace SupermarketTycoon.Progression
                 throw new ArgumentOutOfRangeException(nameof(amount));
             }
 
+            if (IsMaxLevel)
+            {
+                return;
+            }
+
             CurrentXp += amount;
-            while (CurrentXp >= XpToNextLevel)
+            while (!IsMaxLevel && CurrentXp >= XpToNextLevel)
             {
                 CurrentXp -= XpToNextLevel;
                 CurrentLevel++;
                 LevelChanged?.Invoke(CurrentLevel);
+            }
+
+            if (IsMaxLevel)
+            {
+                CurrentXp = 0;
             }
 
             XpChanged?.Invoke(CurrentXp, XpToNextLevel);
@@ -41,10 +58,15 @@ namespace SupermarketTycoon.Progression
 
         private void NormalizeLoadedProgress()
         {
-            while (CurrentXp >= XpToNextLevel)
+            while (!IsMaxLevel && CurrentXp >= XpToNextLevel)
             {
                 CurrentXp -= XpToNextLevel;
                 CurrentLevel++;
+            }
+
+            if (IsMaxLevel)
+            {
+                CurrentXp = 0;
             }
         }
     }

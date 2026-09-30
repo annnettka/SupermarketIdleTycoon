@@ -20,3 +20,25 @@ MonoBehaviour:
   requiredLevel: 1
   capacity: 3
   incomeMultiplier: 1
+  upgradeLevels:
+  - level: 1
+    upgradeCost: 0
+    requiredPlayerLevel: 1
+    capacity: 3
+    incomeMultiplier: 1
+    interactionDuration: 2.5
+    visualScale: 1
+  - level: 2
+    upgradeCost: 150
+    requiredPlayerLevel: 1
+    capacity: 4
+    incomeMultiplier: 1
+    interactionDuration: 1.8
+    visualScale: 1.04
+  - level: 3
+    upgradeCost: 350
+    requiredPlayerLevel: 3
+    capacity: 5
+    incomeMultiplier: 1
+    interactionDuration: 1.2
+    visualScale: 1.08
