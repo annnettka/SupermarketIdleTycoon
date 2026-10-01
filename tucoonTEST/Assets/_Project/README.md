@@ -19,8 +19,6 @@ A compact 3D idle-tycoon vertical slice designed to demonstrate the full progres
 | Visual consistency | Casual low-poly store, coherent UI palette, URP-compatible project-owned material replacements |
 | Native Unity only | Unity AI Navigation, ObjectPool, SceneManager, JsonUtility, coroutines; no gameplay middleware |
 
-The requested editor is **Unity 6000.3.17f1**. This checkout remains saved by **6000.3.13f1** because 6000.3.17f1 is not installed locally. Do not edit `ProjectVersion.txt` by hand. Open, upgrade, validate, and save once in 6000.3.17f1 before submission.
-
 ## How to run
 
 1. Open the project in Unity.
