@@ -7,6 +7,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Customers
 {
+    /// <summary>
+    /// Carries immutable per-spawn dependencies and profile values into the customer FSM without global lookups.
+    /// Передает неизменяемые зависимости и значения профиля одного появления в автомат покупателя без глобального поиска.
+    /// </summary>
     public sealed class CustomerRuntimeContext
     {
         public CustomerRuntimeContext(

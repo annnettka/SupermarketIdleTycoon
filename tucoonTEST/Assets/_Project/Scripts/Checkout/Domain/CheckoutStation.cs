@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Checkout
 {
+    /// <summary>
+    /// Owns ordered checkout queue membership, positions, capacity, and employee-adjusted processing duration.
+    /// Владеет порядком очереди кассы, позициями, вместимостью и скоростью обслуживания с учетом сотрудника.
+    /// </summary>
     public sealed class CheckoutStation : MonoBehaviour
     {
         [SerializeField] private Transform[] queuePoints;
@@ -43,6 +47,10 @@ namespace SupermarketTycoon.Checkout
             employeeSpeedMultiplier = Mathf.Max(0.1f, multiplier);
         }
 
+        /// <summary>
+        /// Appends a customer only when queue ownership and configured physical capacity permit it.
+        /// Добавляет покупателя только тогда, когда владение очередью и физическая вместимость это позволяют.
+        /// </summary>
         public bool TryJoin(CustomerAgent customer)
         {
             RemoveMissingCustomers();
@@ -73,6 +81,10 @@ namespace SupermarketTycoon.Checkout
             return queuePoints[Mathf.Min(index, queuePoints.Length - 1)];
         }
 
+        /// <summary>
+        /// Removes only the current queue head, preserving first-in-first-out checkout semantics.
+        /// Удаляет только первого в очереди, сохраняя порядок обслуживания FIFO.
+        /// </summary>
         public void Complete(CustomerAgent customer)
         {
             if (IsFirst(customer))

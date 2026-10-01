@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace SupermarketTycoon.Save
 {
+    /// <summary>
+    /// Defines save schema version 2 for gameplay progress stored under Application.persistentDataPath.
+    /// Определяет версию 2 схемы игрового прогресса, хранящегося в Application.persistentDataPath.
+    /// </summary>
     [Serializable]
     public sealed class SaveData
     {
@@ -23,6 +27,10 @@ namespace SupermarketTycoon.Save
         public int PendingOfflineIncome;
     }
 
+    /// <summary>
+    /// Persists one constructed building by stable scene and definition identifiers rather than object references.
+    /// Сохраняет одно построенное здание по стабильным идентификаторам сцены и определения вместо ссылок на объекты.
+    /// </summary>
     [Serializable]
     public sealed class BuiltBuildingData
     {
@@ -42,6 +50,10 @@ namespace SupermarketTycoon.Save
         public int BuildingLevel = 1;
     }
 
+    /// <summary>
+    /// Stores cumulative statistics independently from scene objects so they survive session replacement.
+    /// Хранит накопительную статистику независимо от объектов сцены, чтобы она переживала замену сессии.
+    /// </summary>
     [Serializable]
     public sealed class LifetimeStatsData
     {
@@ -64,6 +76,10 @@ namespace SupermarketTycoon.Save
         }
     }
 
+    /// <summary>
+    /// Stores application preferences in a schema independent from gameplay reset and migration.
+    /// Хранит настройки приложения в схеме, независимой от сброса и миграции игрового прогресса.
+    /// </summary>
     [Serializable]
     public sealed class SettingsData
     {

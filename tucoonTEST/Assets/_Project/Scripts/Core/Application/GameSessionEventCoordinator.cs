@@ -11,6 +11,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Core
 {
+    /// <summary>
+    /// Routes domain events between independent session services and owns every cross-system subscription.
+    /// Направляет доменные события между независимыми сервисами сессии и владеет всеми межсистемными подписками.
+    /// </summary>
     public sealed class GameSessionEventCoordinator : IDisposable
     {
         private readonly BuildingService buildings;

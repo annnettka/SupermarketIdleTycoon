@@ -4,6 +4,10 @@ using SupermarketTycoon.Core;
 
 namespace SupermarketTycoon.UI
 {
+    /// <summary>
+    /// Binds settings controls to persisted application preferences and owns reset-progress confirmation.
+    /// Связывает элементы настроек с сохраненными параметрами приложения и управляет подтверждением сброса прогресса.
+    /// </summary>
     public sealed class SettingsController : IDisposable
     {
         private readonly SettingsView view;

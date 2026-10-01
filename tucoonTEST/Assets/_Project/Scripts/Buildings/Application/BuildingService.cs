@@ -9,6 +9,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Buildings
 {
+    /// <summary>
+    /// Reports the outcome of a validated construction request without coupling callers to UI text.
+    /// Сообщает результат проверенного запроса строительства, не связывая вызывающий код с текстом интерфейса.
+    /// </summary>
     public enum PurchaseResult
     {
         Success,
@@ -18,6 +22,10 @@ namespace SupermarketTycoon.Buildings
         InvalidConfiguration
     }
 
+    /// <summary>
+    /// Coordinates registration, validation, construction, restoration, expansion gates, and station registration.
+    /// Координирует регистрацию, проверку, строительство, восстановление, ворота расширений и регистрацию станций.
+    /// </summary>
     public sealed class BuildingService : IDisposable
     {
         private readonly IWallet wallet;
@@ -25,7 +33,8 @@ namespace SupermarketTycoon.Buildings
         private readonly StationRegistry stations;
         private readonly AudioService audio;
         private readonly Dictionary<string, BuildSpot> spots = new Dictionary<string, BuildSpot>();
-        // Save state is authoritative here because Unity may destroy scene BuildSpots before the composition root saves on teardown.
+        // Save state is authoritative here because Unity may destroy scene BuildSpots before teardown saving.
+        // Состояние сохранения авторитетно здесь, потому что Unity может уничтожить точки строительства до финального сохранения.
         private readonly Dictionary<string, BuiltBuildingData> builtStates =
             new Dictionary<string, BuiltBuildingData>();
 
@@ -149,6 +158,10 @@ namespace SupermarketTycoon.Buildings
             spot.Initialize(this, progression);
         }
 
+        /// <summary>
+        /// Validates configuration, unlocks, and funds before constructing a level-one building.
+        /// Проверяет конфигурацию, разблокировку и средства перед строительством здания первого уровня.
+        /// </summary>
         public PurchaseResult TryBuild(BuildSpot spot)
         {
             if (spot == null || spot.Definition == null || spot.Definition.Prefab == null)
@@ -219,6 +232,10 @@ namespace SupermarketTycoon.Buildings
             StateChanged?.Invoke();
         }
 
+        /// <summary>
+        /// Restores matching stable spot/definition pairs without charging money or replaying purchase audio.
+        /// Восстанавливает совпадающие пары стабильных ID точки и определения без списания денег и звука покупки.
+        /// </summary>
         public void Restore(IEnumerable<BuiltBuildingData> builtBuildings)
         {
             if (builtBuildings == null)
@@ -249,6 +266,10 @@ namespace SupermarketTycoon.Buildings
             StateChanged?.Invoke();
         }
 
+        /// <summary>
+        /// Returns detached save records from service-owned state, which remains valid during Unity teardown.
+        /// Возвращает отдельные записи сохранения из состояния сервиса, остающегося корректным при завершении Unity.
+        /// </summary>
         public List<BuiltBuildingData> CaptureBuiltBuildings()
         {
             var result = new List<BuiltBuildingData>();

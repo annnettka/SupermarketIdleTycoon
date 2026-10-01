@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.SceneFlow
 {
+    /// <summary>
+    /// Wires the main-menu view to application services for the lifetime of the menu scene.
+    /// Связывает представление главного меню с сервисами приложения на время жизни сцены меню.
+    /// </summary>
     public sealed class MainMenuEntryPoint : SceneEntryPoint
     {
         [SerializeField] private MainMenuView mainMenuView;

@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Progression
 {
+    /// <summary>
+    /// Maintains bounded store rating and derives customer traffic pacing from service outcomes.
+    /// Поддерживает рейтинг магазина в допустимых границах и определяет темп покупателей по результатам обслуживания.
+    /// </summary>
     public sealed class StoreRatingService
     {
         public StoreRatingService(float loadedRating)

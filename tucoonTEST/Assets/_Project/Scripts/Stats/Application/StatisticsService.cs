@@ -3,6 +3,10 @@ using SupermarketTycoon.Save;
 
 namespace SupermarketTycoon.Stats
 {
+    /// <summary>
+    /// Owns cumulative session-independent statistics and returns detached snapshots for persistence.
+    /// Владеет накопительной статистикой, независимой от сессии, и возвращает отдельные снимки для сохранения.
+    /// </summary>
     public sealed class StatisticsService
     {
         private readonly LifetimeStatsData data;

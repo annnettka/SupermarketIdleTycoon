@@ -3,6 +3,10 @@ using UnityEngine.UI;
 
 namespace SupermarketTycoon.UI
 {
+    /// <summary>
+    /// Exposes building-panel commands and renders controller-provided building and upgrade state.
+    /// Предоставляет команды панели здания и отображает переданное контроллером состояние здания и улучшения.
+    /// </summary>
     public sealed class BuildingPanelView : MonoBehaviour
     {
         [SerializeField] private GameObject root;

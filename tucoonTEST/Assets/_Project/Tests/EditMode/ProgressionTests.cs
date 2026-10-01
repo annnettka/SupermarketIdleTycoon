@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Tests
 {
+    /// <summary>
+    /// Verifies XP overflow and level transition behavior.
+    /// Проверяет перенос избытка опыта и переход между уровнями.
+    /// </summary>
     public sealed class ProgressionTests
     {
         [Test]

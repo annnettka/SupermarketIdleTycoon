@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Employees
 {
+    /// <summary>
+    /// Defines one employee tier with its unlock, purchase cost, and automation bonus.
+    /// Определяет один уровень сотрудника с разблокировкой, стоимостью и бонусом автоматизации.
+    /// </summary>
     [Serializable]
     public struct EmployeeLevelDefinition
     {
@@ -25,6 +29,10 @@ namespace SupermarketTycoon.Employees
         }
     }
 
+    /// <summary>
+    /// Stores stable employee identity and ordered automation levels as configuration-only data.
+    /// Хранит стабильную идентичность сотрудника и упорядоченные уровни автоматизации только как конфигурацию.
+    /// </summary>
     [CreateAssetMenu(menuName = "Supermarket Tycoon/Employee Definition", fileName = "CashierEmployee")]
     public sealed class EmployeeDefinition : ScriptableObject
     {

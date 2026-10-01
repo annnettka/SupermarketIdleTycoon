@@ -3,6 +3,10 @@ using UnityEngine.UI;
 
 namespace SupermarketTycoon.UI
 {
+    /// <summary>
+    /// Exposes employee purchase input and renders cashier level, benefit, lock, and cost information.
+    /// Предоставляет ввод покупки сотрудника и отображает уровень кассира, выгоду, блокировку и стоимость.
+    /// </summary>
     public sealed class EmployeeView : MonoBehaviour
     {
         [SerializeField] private GameObject root;

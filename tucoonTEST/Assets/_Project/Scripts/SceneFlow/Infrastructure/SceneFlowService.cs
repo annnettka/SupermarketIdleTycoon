@@ -6,6 +6,10 @@ using UnityEngine.SceneManagement;
 
 namespace SupermarketTycoon.SceneFlow
 {
+    /// <summary>
+    /// Serializes asynchronous scene transitions, drives loading feedback, and initializes one scene entry point.
+    /// Последовательно выполняет асинхронные переходы сцен, обновляет экран загрузки и инициализирует одну точку входа сцены.
+    /// </summary>
     public sealed class SceneFlowService
     {
         public const string MainMenuSceneName = "MainMenu";

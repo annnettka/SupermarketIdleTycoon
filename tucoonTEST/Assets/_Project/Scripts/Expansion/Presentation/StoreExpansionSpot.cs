@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 namespace SupermarketTycoon.Expansion
 {
+    /// <summary>
+    /// Adapts an authored expansion area to purchase input, lock presentation, and restored ownership state.
+    /// Адаптирует подготовленную зону расширения к покупке, отображению блокировки и восстановленному владению.
+    /// </summary>
     public sealed class StoreExpansionSpot : MonoBehaviour
     {
         [SerializeField] private StoreExpansionDefinition definition;

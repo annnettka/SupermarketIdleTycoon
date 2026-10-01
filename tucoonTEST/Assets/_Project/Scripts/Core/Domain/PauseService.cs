@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Core
 {
+    /// <summary>
+    /// Provides authoritative session pause state and keeps time-scale changes behind a focused boundary.
+    /// Предоставляет авторитетное состояние паузы сессии и скрывает изменение масштаба времени за узкой границей.
+    /// </summary>
     public sealed class PauseService
     {
         public bool IsPaused { get; private set; }

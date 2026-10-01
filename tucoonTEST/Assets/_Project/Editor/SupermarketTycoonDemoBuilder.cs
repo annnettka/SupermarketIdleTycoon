@@ -20,6 +20,10 @@ using UnityEngine.SceneManagement;
 
 namespace SupermarketTycoon.Editor
 {
+    /// <summary>
+    /// Idempotently creates or repairs project-owned demo assets while treating every third-party source as read-only.
+    /// Идемпотентно создает или восстанавливает ресурсы демо проекта, считая все сторонние исходники доступными только для чтения.
+    /// </summary>
     public static partial class SupermarketTycoonDemoBuilder
     {
         private const string MenuPath = "Tools/Supermarket Tycoon/Build / Repair Playable Demo";
@@ -122,6 +126,10 @@ namespace SupermarketTycoon.Editor
             }
         }
 
+        /// <summary>
+        /// Runs Tools &gt; Supermarket Tycoon &gt; Build / Repair Playable Demo and reports failures to the editor.
+        /// Запускает Tools &gt; Supermarket Tycoon &gt; Build / Repair Playable Demo и сообщает об ошибках в редакторе.
+        /// </summary>
         [MenuItem(MenuPath)]
         public static void BuildPlayableDemoFromMenu()
         {
@@ -134,6 +142,10 @@ namespace SupermarketTycoon.Editor
             BuildPlayableDemo(false);
         }
 
+        /// <summary>
+        /// Provides the same deterministic build pipeline to batch-mode validation.
+        /// Предоставляет тот же детерминированный конвейер сборки для проверки в пакетном режиме.
+        /// </summary>
         public static void BuildPlayableDemoBatch()
         {
             BuildPlayableDemo(true);

@@ -7,6 +7,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Employees
 {
+    /// <summary>
+    /// Reports the result of purchasing the next automation tier.
+    /// Сообщает результат покупки следующего уровня автоматизации.
+    /// </summary>
     public enum EmployeePurchaseResult
     {
         Success,
@@ -16,6 +20,10 @@ namespace SupermarketTycoon.Employees
         InvalidConfiguration
     }
 
+    /// <summary>
+    /// Owns cashier progression and applies its speed multiplier to existing and future checkout stations.
+    /// Владеет прогрессией кассира и применяет его множитель скорости к существующим и будущим кассам.
+    /// </summary>
     public sealed class EmployeeService
     {
         private readonly EmployeeDefinition definition;

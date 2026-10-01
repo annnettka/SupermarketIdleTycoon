@@ -3,6 +3,10 @@ using SupermarketTycoon.Economy;
 
 namespace SupermarketTycoon.Tests
 {
+    /// <summary>
+    /// Verifies wallet balance and spending invariants.
+    /// Проверяет инварианты баланса и расходов кошелька.
+    /// </summary>
     public sealed class WalletTests
     {
         [Test]

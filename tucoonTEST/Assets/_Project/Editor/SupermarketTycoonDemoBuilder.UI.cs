@@ -8,6 +8,10 @@ using UnityEngine.UI;
 
 namespace SupermarketTycoon.Editor
 {
+    /// <summary>
+    /// Creates the project-owned UI hierarchy and world-space interaction chips from reusable helper methods.
+    /// Создает собственную иерархию UI и мировые элементы взаимодействия с помощью переиспользуемых методов.
+    /// </summary>
     public static partial class SupermarketTycoonDemoBuilder
     {
         private const string ButtonSpritePath = "Assets/HONETi/mobile_cartoon_GUI/GUI Elements/Buttons/btn_big.png";

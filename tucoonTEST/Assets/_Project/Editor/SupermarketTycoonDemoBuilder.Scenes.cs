@@ -22,6 +22,10 @@ using UnityEngine.SceneManagement;
 
 namespace SupermarketTycoon.Editor
 {
+    /// <summary>
+    /// Rebuilds the three owned scenes from scratch so repeated runs replace content instead of duplicating it.
+    /// Перестраивает три собственные сцены с нуля, чтобы повторный запуск заменял содержимое, а не дублировал его.
+    /// </summary>
     public static partial class SupermarketTycoonDemoBuilder
     {
         private static void BuildBootstrapScene(GameConfig gameConfig)

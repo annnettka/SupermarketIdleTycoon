@@ -7,6 +7,10 @@ using SupermarketTycoon.Progression;
 
 namespace SupermarketTycoon.Objectives
 {
+    /// <summary>
+    /// Matches gameplay events to the active objective, grants rewards, and advances the ordered sequence.
+    /// Сопоставляет игровые события с активной целью, выдает награды и продвигает упорядоченную последовательность.
+    /// </summary>
     public sealed class ObjectiveService
     {
         private readonly ObjectiveConfig config;

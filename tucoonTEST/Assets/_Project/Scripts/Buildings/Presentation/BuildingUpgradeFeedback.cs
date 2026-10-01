@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Buildings
 {
+    /// <summary>
+    /// Plays presentation-only reveal and upgrade feedback without owning building state.
+    /// Воспроизводит только визуальную обратную связь появления и улучшения, не владея состоянием здания.
+    /// </summary>
     public sealed class BuildingUpgradeFeedback : MonoBehaviour
     {
         private Coroutine routine;

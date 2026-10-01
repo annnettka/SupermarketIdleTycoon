@@ -7,6 +7,10 @@ using SupermarketTycoon.Progression;
 
 namespace SupermarketTycoon.UI
 {
+    /// <summary>
+    /// Projects wallet, progression, rating, objectives, and traffic events into the in-game HUD.
+    /// Проецирует события кошелька, прогрессии, рейтинга, целей и потока покупателей в игровой HUD.
+    /// </summary>
     public sealed class HudController : IDisposable
     {
         private readonly GameHudView view;

@@ -5,6 +5,10 @@ using SupermarketTycoon.Progression;
 
 namespace SupermarketTycoon.Buildings
 {
+    /// <summary>
+    /// Reports why a building upgrade was accepted or rejected.
+    /// Сообщает, почему улучшение здания было принято или отклонено.
+    /// </summary>
     public enum UpgradeResult
     {
         Success,
@@ -15,6 +19,10 @@ namespace SupermarketTycoon.Buildings
         InvalidConfiguration
     }
 
+    /// <summary>
+    /// Validates and purchases building levels while delegating authoritative station updates to BuildingService.
+    /// Проверяет и покупает уровни зданий, передавая авторитетное обновление станций сервису BuildingService.
+    /// </summary>
     public sealed class BuildingUpgradeService
     {
         private readonly IWallet wallet;

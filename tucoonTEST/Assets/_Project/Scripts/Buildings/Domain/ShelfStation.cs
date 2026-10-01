@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Buildings
 {
+    /// <summary>
+    /// Owns shelf capacity and customer reservations, coordinating logical stock with shopping interactions.
+    /// Владеет вместимостью полки и резервированиями покупателей, связывая логический запас с покупками.
+    /// </summary>
     public sealed class ShelfStation : MonoBehaviour
     {
         [SerializeField] private Transform interactionPoint;
@@ -51,6 +55,10 @@ namespace SupermarketTycoon.Buildings
             return InteractionPoint.position + InteractionPoint.right * centeredOffset;
         }
 
+        /// <summary>
+        /// Atomically reserves both shelf capacity and one logical product slot for a customer.
+        /// Атомарно резервирует для покупателя вместимость полки и один логический слот товара.
+        /// </summary>
         public bool TryReserve(CustomerAgent customer)
         {
             RemoveMissingCustomers();
@@ -68,6 +76,10 @@ namespace SupermarketTycoon.Buildings
             return true;
         }
 
+        /// <summary>
+        /// Commits the customer's reserved logical product and starts presentation-only restocking.
+        /// Подтверждает зарезервированный покупателем логический товар и запускает только визуальное пополнение.
+        /// </summary>
         public bool TryTakeProduct(CustomerAgent customer, out ProductDefinition product)
         {
             if (stockView == null)

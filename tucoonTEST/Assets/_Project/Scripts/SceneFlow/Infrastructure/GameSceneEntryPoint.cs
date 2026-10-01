@@ -14,6 +14,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.SceneFlow
 {
+    /// <summary>
+    /// Composes session-lifetime gameplay services and controllers, then disposes them in reverse ownership order.
+    /// Компонует игровые сервисы и контроллеры уровня сессии, затем освобождает их в обратном порядке владения.
+    /// </summary>
     public sealed class GameSceneEntryPoint : SceneEntryPoint
     {
         [Header("Configuration")]

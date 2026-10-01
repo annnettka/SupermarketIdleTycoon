@@ -5,6 +5,10 @@ using SupermarketTycoon.SceneFlow;
 
 namespace SupermarketTycoon.Core
 {
+    /// <summary>
+    /// Exposes immutable application-lifetime dependencies to scene entry points without acting as a service locator.
+    /// Передает неизменяемые зависимости уровня приложения точкам входа сцен, не являясь локатором сервисов.
+    /// </summary>
     public sealed class ApplicationContext
     {
         public ApplicationContext(

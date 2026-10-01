@@ -2,6 +2,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Expansion
 {
+    /// <summary>
+    /// Defines a purchasable business area by stable ID, price, and progression requirement.
+    /// Определяет покупаемую деловую зону стабильным ID, ценой и требованием прогрессии.
+    /// </summary>
     [CreateAssetMenu(menuName = "Supermarket Tycoon/Store Expansion", fileName = "StoreExpansion")]
     public sealed class StoreExpansionDefinition : ScriptableObject
     {

@@ -10,6 +10,10 @@ using SupermarketTycoon.Stats;
 
 namespace SupermarketTycoon.Save
 {
+    /// <summary>
+    /// Observes authoritative session services, debounces writes, and assembles complete persistence snapshots.
+    /// Наблюдает за авторитетными сервисами сессии, объединяет частые изменения и формирует полные снимки для сохранения.
+    /// </summary>
     public sealed class GameSaveCoordinator : IDisposable
     {
         private const float SaveDelaySeconds = 0.4f;

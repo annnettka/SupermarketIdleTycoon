@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Customers
 {
+    /// <summary>
+    /// Associates a stable visual ID with one level-gated character root.
+    /// Связывает стабильный ID внешности с одним корневым объектом персонажа, ограниченным уровнем.
+    /// </summary>
     [Serializable]
     public sealed class CustomerVisualVariant
     {
@@ -22,6 +26,10 @@ namespace SupermarketTycoon.Customers
         public int RequiredLevel => Mathf.Max(1, requiredLevel);
     }
 
+    /// <summary>
+    /// Selects an eligible character appearance and applies profile tint through MaterialPropertyBlock.
+    /// Выбирает доступную внешность персонажа и применяет оттенок профиля через MaterialPropertyBlock.
+    /// </summary>
     [DisallowMultipleComponent]
     public sealed class CustomerVisualSelector : MonoBehaviour
     {

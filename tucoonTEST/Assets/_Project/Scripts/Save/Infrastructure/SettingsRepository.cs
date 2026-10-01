@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Save
 {
+    /// <summary>
+    /// Persists user preferences separately from resettable gameplay progress and supplies safe defaults on failure.
+    /// Хранит пользовательские настройки отдельно от сбрасываемого игрового прогресса и возвращает безопасные значения при ошибке.
+    /// </summary>
     public sealed class SettingsRepository
     {
         private readonly string settingsPath;

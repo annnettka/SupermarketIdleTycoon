@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using SupermarketTycoon.Customers;
 using SupermarketTycoon.Economy;
 using SupermarketTycoon.Objectives;
 using SupermarketTycoon.Offline;
@@ -7,8 +8,32 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Tests
 {
+    /// <summary>
+    /// Verifies progression cap, rating thresholds, objective rewards, income scaling, and offline collection.
+    /// Проверяет предел прогрессии, пороги рейтинга, награды целей, масштабирование дохода и получение офлайн-дохода.
+    /// </summary>
     public sealed class FeatureExpansionTests
     {
+        [Test]
+        public void CustomerSpawner_UpdateBeforeInitialization_IsNoOp()
+        {
+            var root = new GameObject("Spawner");
+            try
+            {
+                var spawner = root.AddComponent<CustomerSpawner>();
+                var update = typeof(CustomerSpawner).GetMethod(
+                    "Update",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+
+                Assert.That(update, Is.Not.Null);
+                Assert.DoesNotThrow(() => update.Invoke(spawner, null));
+            }
+            finally
+            {
+                Object.DestroyImmediate(root);
+            }
+        }
+
         [Test]
         public void Progression_StopsAtConfiguredLevelFive()
         {

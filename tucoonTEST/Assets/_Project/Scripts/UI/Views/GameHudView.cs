@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 namespace SupermarketTycoon.UI
 {
+    /// <summary>
+    /// Renders session status and exposes HUD commands without mutating gameplay services directly.
+    /// Отображает состояние сессии и предоставляет команды HUD, не изменяя игровые сервисы напрямую.
+    /// </summary>
     public sealed class GameHudView : MonoBehaviour
     {
         [SerializeField] private Text moneyLabel;

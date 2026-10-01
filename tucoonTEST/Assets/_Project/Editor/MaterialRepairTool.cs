@@ -9,6 +9,10 @@ using UnityEngine.SceneManagement;
 
 namespace SupermarketTycoon.Editor
 {
+    /// <summary>
+    /// Diagnoses rendering compatibility and creates project-owned URP material replacements without editing source packs.
+    /// Диагностирует совместимость рендеринга и создает собственные замены материалов URP, не изменяя исходные пакеты.
+    /// </summary>
     public static class MaterialRepairTool
     {
         private const string DiagnoseMenuPath = "Tools/Supermarket Tycoon/Diagnose Materials";
@@ -735,6 +739,10 @@ namespace SupermarketTycoon.Editor
             }
         }
 
+        /// <summary>
+        /// Describes one source-to-owned material conversion and the shader properties that must be preserved.
+        /// Описывает одно преобразование исходного материала в собственный и свойства шейдера, которые нужно сохранить.
+        /// </summary>
         private sealed class MaterialDefinition
         {
             public MaterialDefinition(

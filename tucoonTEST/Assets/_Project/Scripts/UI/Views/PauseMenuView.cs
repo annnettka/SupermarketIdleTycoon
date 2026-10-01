@@ -3,6 +3,10 @@ using UnityEngine.UI;
 
 namespace SupermarketTycoon.UI
 {
+    /// <summary>
+    /// Exposes pause-menu commands and renders controller-selected pause, settings, and statistics panels.
+    /// Предоставляет команды меню паузы и отображает выбранные контроллером панели паузы, настроек и статистики.
+    /// </summary>
     public sealed class PauseMenuView : MonoBehaviour
     {
         [SerializeField] private GameObject root;

@@ -9,6 +9,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Tests
 {
+    /// <summary>
+    /// Verifies construction, upgrade, spending, unlock, and restoration invariants across building services.
+    /// Проверяет инварианты строительства, улучшений, расходов, разблокировок и восстановления сервисов зданий.
+    /// </summary>
     public sealed class BuildingServiceTests
     {
         private readonly List<Object> cleanup = new List<Object>();

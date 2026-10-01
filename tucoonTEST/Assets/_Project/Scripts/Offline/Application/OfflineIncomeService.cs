@@ -6,6 +6,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Offline
 {
+    /// <summary>
+    /// Estimates capped offline earnings from built capacity and automation, then transfers them exactly once.
+    /// Оценивает ограниченный офлайн-доход по построенной мощности и автоматизации, затем начисляет его ровно один раз.
+    /// </summary>
     public sealed class OfflineIncomeService
     {
         private const double MaximumOfflineMinutes = 120d;

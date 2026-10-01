@@ -8,6 +8,10 @@ using UnityEngine.Audio;
 
 namespace SupermarketTycoon.Bootstrap
 {
+    /// <summary>
+    /// Owns the application composition root and constructs long-lived services with explicit dependencies.
+    /// Владеет корнем композиции приложения и создает долгоживущие сервисы с явными зависимостями.
+    /// </summary>
     [DisallowMultipleComponent]
     public sealed class AppBootstrapper : MonoBehaviour
     {
@@ -26,6 +30,7 @@ namespace SupermarketTycoon.Bootstrap
 
         private static bool instanceExists;
         private ApplicationContext context;
+        private bool ownsInstance;
 
         private void Awake()
         {
@@ -36,18 +41,19 @@ namespace SupermarketTycoon.Bootstrap
             }
 
             instanceExists = true;
+            ownsInstance = true;
             DontDestroyOnLoad(gameObject);
             ComposeApplication();
         }
 
         private void Start()
         {
-            context.SceneFlow.LoadMainMenu();
+            context?.SceneFlow.LoadMainMenu();
         }
 
         private void OnDestroy()
         {
-            if (context != null)
+            if (ownsInstance)
             {
                 instanceExists = false;
             }

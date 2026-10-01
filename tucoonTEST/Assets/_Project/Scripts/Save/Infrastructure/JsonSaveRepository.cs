@@ -6,14 +6,37 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Save
 {
+    /// <summary>
+    /// Defines the replaceable persistence boundary consumed by gameplay composition and save coordination.
+    /// Определяет заменяемую границу хранения, используемую композицией игры и координатором сохранений.
+    /// </summary>
     public interface ISaveRepository
     {
         bool HasSave { get; }
+
+        /// <summary>
+        /// Loads, migrates, and normalizes progress, or creates safe initial data when no valid save exists.
+        /// Загружает, мигрирует и нормализует прогресс либо создает безопасные начальные данные при отсутствии сохранения.
+        /// </summary>
         SaveData LoadOrCreate(GameConfig config);
+
+        /// <summary>
+        /// Writes a normalized snapshot while preserving the previous file as a backup.
+        /// Записывает нормализованный снимок, сохраняя предыдущий файл как резервную копию.
+        /// </summary>
         void Save(SaveData data);
+
+        /// <summary>
+        /// Deletes gameplay progress and its backup without affecting the separate settings file.
+        /// Удаляет игровой прогресс и резервную копию, не затрагивая отдельный файл настроек.
+        /// </summary>
         void Delete();
     }
 
+    /// <summary>
+    /// Persists versioned gameplay data with native JSON, backup creation, normalization, and corruption recovery.
+    /// Сохраняет версионированные игровые данные через нативный JSON, создавая резервные копии, нормализуя и восстанавливая повреждения.
+    /// </summary>
     public sealed class JsonSaveRepository : ISaveRepository
     {
         private const string FileName = "supermarket-save.json";

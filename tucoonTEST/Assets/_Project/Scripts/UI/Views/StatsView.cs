@@ -4,6 +4,10 @@ using UnityEngine.UI;
 
 namespace SupermarketTycoon.UI
 {
+    /// <summary>
+    /// Renders a read-only lifetime statistics snapshot supplied by the pause controller.
+    /// Отображает переданный контроллером паузы неизменяемый снимок общей статистики.
+    /// </summary>
     public sealed class StatsView : MonoBehaviour
     {
         [SerializeField] private GameObject root;

@@ -2,6 +2,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Customers
 {
+    /// <summary>
+    /// Defines a data-driven customer archetype with unlock, spawn weight, behavior, value, and presentation tint.
+    /// Определяет управляемый данными архетип покупателя: разблокировку, вес появления, поведение, ценность и оттенок.
+    /// </summary>
     [CreateAssetMenu(menuName = "Supermarket Tycoon/Customer Profile", fileName = "CustomerProfile")]
     public sealed class CustomerProfileDefinition : ScriptableObject
     {

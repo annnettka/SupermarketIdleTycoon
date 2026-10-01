@@ -3,6 +3,10 @@ using UnityEngine.UI;
 
 namespace SupermarketTycoon.UI
 {
+    /// <summary>
+    /// Exposes settings input and displays persisted values without owning application preferences.
+    /// Предоставляет ввод настроек и отображает сохраненные значения, не владея параметрами приложения.
+    /// </summary>
     public sealed class SettingsView : MonoBehaviour
     {
         [SerializeField] private GameObject root;

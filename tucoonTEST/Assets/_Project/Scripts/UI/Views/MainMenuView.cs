@@ -3,6 +3,10 @@ using UnityEngine.UI;
 
 namespace SupermarketTycoon.UI
 {
+    /// <summary>
+    /// Exposes main-menu commands and renders save-aware labels supplied by its controller.
+    /// Предоставляет команды главного меню и отображает зависящие от сохранения подписи контроллера.
+    /// </summary>
     public sealed class MainMenuView : MonoBehaviour
     {
         [SerializeField] private GameObject menuRoot;

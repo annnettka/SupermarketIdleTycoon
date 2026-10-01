@@ -3,6 +3,10 @@ using UnityEngine.UI;
 
 namespace SupermarketTycoon.UI
 {
+    /// <summary>
+    /// Presents asynchronous scene-loading progress while SceneFlowService owns transition policy.
+    /// Отображает прогресс асинхронной загрузки сцены, пока SceneFlowService владеет политикой перехода.
+    /// </summary>
     public sealed class LoadingScreenView : MonoBehaviour
     {
         [SerializeField] private CanvasGroup canvasGroup;

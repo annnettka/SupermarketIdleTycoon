@@ -7,6 +7,10 @@ using UnityEngine.Audio;
 
 namespace SupermarketTycoon.Audio
 {
+    /// <summary>
+    /// Identifies semantic sound effects so gameplay code is independent of concrete audio clips.
+    /// Обозначает смысловые звуковые эффекты, чтобы игровой код не зависел от конкретных аудиоклипов.
+    /// </summary>
     public enum GameSound
     {
         UiClick,
@@ -15,6 +19,10 @@ namespace SupermarketTycoon.Audio
         LevelUp
     }
 
+    /// <summary>
+    /// Owns music transitions, effect playback, and mixer volume mapping for the application lifetime.
+    /// Владеет переходами музыки, воспроизведением эффектов и настройкой громкости микшера на время жизни приложения.
+    /// </summary>
     public sealed class AudioService
     {
         private const string MasterVolumeParameter = "MasterVolume";

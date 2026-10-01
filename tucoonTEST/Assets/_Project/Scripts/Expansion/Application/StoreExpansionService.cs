@@ -7,6 +7,10 @@ using SupermarketTycoon.Progression;
 
 namespace SupermarketTycoon.Expansion
 {
+    /// <summary>
+    /// Reports the outcome of an expansion purchase request.
+    /// Сообщает результат запроса на покупку расширения.
+    /// </summary>
     public enum ExpansionPurchaseResult
     {
         Success,
@@ -16,6 +20,10 @@ namespace SupermarketTycoon.Expansion
         InvalidConfiguration
     }
 
+    /// <summary>
+    /// Owns purchased expansion IDs and activates gated building locations through BuildingService.
+    /// Владеет ID купленных расширений и активирует связанные точки зданий через BuildingService.
+    /// </summary>
     public sealed class StoreExpansionService : IDisposable
     {
         private readonly IWallet wallet;
@@ -24,6 +32,7 @@ namespace SupermarketTycoon.Expansion
         private readonly AudioService audio;
         private readonly List<StoreExpansionSpot> spots = new List<StoreExpansionSpot>();
         // Keep IDs independent of scene objects so final saves remain valid during nondeterministic Unity teardown.
+        // ID не зависят от объектов сцены, поэтому финальные сохранения корректны при недетерминированном завершении Unity.
         private readonly HashSet<string> purchasedIds = new HashSet<string>(StringComparer.Ordinal);
 
         public StoreExpansionService(

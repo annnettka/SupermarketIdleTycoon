@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Buildings
 {
+    /// <summary>
+    /// Classifies station behavior while configuration remains data-driven through building definitions.
+    /// Классифицирует поведение станций, тогда как настройка остается управляемой данными через определения зданий.
+    /// </summary>
     public enum BuildingType
     {
         Shelf,
@@ -10,6 +14,10 @@ namespace SupermarketTycoon.Buildings
         FutureExpansion
     }
 
+    /// <summary>
+    /// Describes one upgrade tier, including cost, unlock, capacity, throughput, profit, and presentation scale.
+    /// Описывает один уровень улучшения: стоимость, разблокировку, вместимость, скорость, прибыль и визуальный масштаб.
+    /// </summary>
     [Serializable]
     public struct BuildingLevelDefinition
     {
@@ -48,6 +56,10 @@ namespace SupermarketTycoon.Buildings
         }
     }
 
+    /// <summary>
+    /// Defines a building by stable save ID and prefab so new locations can be added without changing purchase logic.
+    /// Определяет здание стабильным ID сохранения и префабом, позволяя добавлять новые локации без изменения логики покупки.
+    /// </summary>
     [CreateAssetMenu(menuName = "Supermarket Tycoon/Building Definition", fileName = "BuildingDefinition")]
     public sealed class BuildingDefinition : ScriptableObject
     {

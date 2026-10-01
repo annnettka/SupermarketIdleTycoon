@@ -4,6 +4,10 @@ using UnityEngine.UI;
 
 namespace SupermarketTycoon.UI
 {
+    /// <summary>
+    /// Plays a self-contained world-to-screen income notification and returns it to its inactive state.
+    /// Воспроизводит автономное уведомление дохода из мира на экран и возвращает его в неактивное состояние.
+    /// </summary>
     public sealed class FloatingIncomeView : MonoBehaviour
     {
         [SerializeField] private Text label;

@@ -4,6 +4,10 @@ using SupermarketTycoon.Customers;
 
 namespace SupermarketTycoon.Buildings
 {
+    /// <summary>
+    /// Tracks operational shelves and checkouts and owns customer reservation and queue selection policy.
+    /// Отслеживает работающие полки и кассы и владеет политикой выбора резервирования и очереди покупателей.
+    /// </summary>
     public sealed class StationRegistry
     {
         private readonly List<ShelfStation> shelves = new List<ShelfStation>();

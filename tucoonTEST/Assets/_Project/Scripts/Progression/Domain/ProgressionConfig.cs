@@ -2,6 +2,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Progression
 {
+    /// <summary>
+    /// Stores level thresholds, unlock descriptions, and customer-cap growth as immutable progression data.
+    /// Хранит пороги уровней, описания разблокировок и рост лимита покупателей как неизменяемые данные прогрессии.
+    /// </summary>
     [CreateAssetMenu(menuName = "Supermarket Tycoon/Progression Config", fileName = "ProgressionConfig")]
     public sealed class ProgressionConfig : ScriptableObject
     {

@@ -8,6 +8,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.UI
 {
+    /// <summary>
+    /// Coordinates selected-building details and upgrades while keeping purchase rules out of the view.
+    /// Координирует сведения о выбранном здании и улучшения, не помещая правила покупки в представление.
+    /// </summary>
     public sealed class BuildingPanelController : IDisposable
     {
         private readonly BuildingPanelView view;

@@ -19,9 +19,9 @@ A compact 3D idle-tycoon vertical slice designed to demonstrate the full progres
 | Visual consistency | Casual low-poly store, coherent UI palette, URP-compatible project-owned material replacements |
 | Native Unity only | Unity AI Navigation, ObjectPool, SceneManager, JsonUtility, coroutines; no gameplay middleware |
 
-The requested editor is **Unity 6000.3.17f1**. This checkout is currently saved by **6000.3.13f1** because 6000.3.17f1 is not installed in the verification environment. Do not edit `ProjectVersion.txt` by hand. Open, upgrade, validate, and save once in 6000.3.17f1 before submission.
+The requested editor is **Unity 6000.3.17f1**. This checkout remains saved by **6000.3.13f1** because 6000.3.17f1 is not installed locally. Do not edit `ProjectVersion.txt` by hand. Open, upgrade, validate, and save once in 6000.3.17f1 before submission.
 
-## Run the demo
+## How to run
 
 1. Open the project in Unity.
 2. Let package import and script compilation complete.
@@ -111,6 +111,10 @@ Plain C# services own rules and accept explicit constructor dependencies. MonoBe
 
 Dependency direction is presentation -> application services -> domain state. Persistence is behind `ISaveRepository`; wallet access is behind `IWallet`. Views expose commands and rendering only. Subscriptions are removed in `Dispose`/`OnDestroy`.
 
+## UI architecture
+
+Views expose Unity UI commands and render supplied state only. Focused controllers subscribe to views and application services, translate domain outcomes into labels and interaction state, and release every subscription through `Dispose`. Wallet, progression, building, employee, and save mutations never originate in a view. Screen-space panels use shared unscaled transitions; world-space build chips remain attached to their authored interaction points.
+
 ## Building extensibility
 
 `BuildingDefinition` provides a stable ID, display name, type, wrapper prefab, price, required player level, base capacity, and `BuildingLevelDefinition[]`. Each level can configure cost, player requirement, capacity, income multiplier, interaction duration, and visual scale.
@@ -173,6 +177,12 @@ To add a visual:
 2. Add a unique `CustomerVisualVariant` entry and optional required level.
 3. Leave movement, profile, pooling, and FSM code unchanged.
 
+## Product and stock system
+
+`ProductDefinition` assets provide stable identity, category, value multiplier, unlock level, premium status, and wrapper prefab. Shelf gameplay uses logical `ShelfProductSlot` reservations: a customer reserves one available slot, commits it during shopping, and releases it on cancellation. `ShelfStockView` owns restock timing and presents depleted stock in staged Empty, Low, Medium, and Full states.
+
+The six visible products in a slot are presentation only: Full, Medium, Low, and Empty map to 6, 4, 2, and 0 active items while logical ownership remains one slot. Customer carry visuals, fresh-food cases, checkout impulse displays, and premium groups likewise never mutate economy or inventory rules.
+
 ## Save architecture
 
 Gameplay data is readable JSON at `Application.persistentDataPath/supermarket-save.json`; the prior valid file is retained as `supermarket-save.backup.json`. Native `JsonUtility` and `System.IO` are the only persistence dependencies.
@@ -193,6 +203,14 @@ Version-1 saves migrate in place: building levels default to 1, rating to 3.0, n
 ## Offline income and stats
 
 Offline earnings are capped at 120 minutes and estimate throughput from Shelf capacity, Checkout capacity, base payment, average Shelf multiplier, Cashier speed, and 35% offline efficiency. Collection transfers the pending amount exactly once. The Pause menu shows customers served/lost, total earned, buildings purchased, and upgrades purchased.
+
+## Audio
+
+`AudioService` owns two looping music sources for menu/gameplay crossfades, one SFX source, and normalized Master, Music, and SFX mixer parameters. `vintage_menu.mp3` and `Two Left Socks.mp3` are referenced by the generated Bootstrap scene. Gameplay requests semantic `GameSound` values rather than concrete clips, and persisted volume changes are applied immediately through `SettingsService`.
+
+## Extensibility
+
+New buildings, products, customer profiles, objectives, employee tiers, and business-area expansions are authored through focused definitions and scene adapters. Stable IDs preserve save compatibility, while central services consume shared contracts instead of enumerating concrete content. Persistence can be replaced behind `ISaveRepository`, and presentation wrappers can change without rewriting economy, progression, or customer-state rules.
 
 ## Generated content and materials
 
@@ -224,5 +242,9 @@ EditMode tests cover:
 - rating bounds and traffic thresholds
 - customer payment multiplier
 - one-time offline collection
+- grouped shelf stock states and product-display topology
+- generated Game scene build-spot count and missing-script integrity
+
+The PlayMode journey covers Bootstrap to Main Menu to Game, scene-specific music routing, settings persistence, construction and upgrades, expansion, cashier automation, customer stock consumption and automatic restocking, checkout payment, live level progression, pause/resume, save/continue restoration, and progress reset.
 
 Run from `Window > General > Test Runner`, or use Unity batch mode. Run `Tools > Supermarket Tycoon > Validate Playable Demo` for static scene/data/prefab checks.

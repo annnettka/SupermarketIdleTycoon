@@ -9,6 +9,10 @@ using UnityEngine.TestTools;
 
 namespace SupermarketTycoon.Tests
 {
+    /// <summary>
+    /// Verifies native JSON round trips, migration, corruption backup, reset, and settings defaults.
+    /// Проверяет нативный JSON, миграцию, резервирование повреждений, сброс и значения настроек по умолчанию.
+    /// </summary>
     public sealed class SaveDataTests
     {
         [Test]

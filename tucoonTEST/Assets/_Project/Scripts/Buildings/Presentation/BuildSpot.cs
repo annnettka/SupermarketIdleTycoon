@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Buildings
 {
+    /// <summary>
+    /// Adapts one authored location with a stable ID to building selection, construction, and restored level state.
+    /// Адаптирует одну подготовленную точку со стабильным ID к выбору, строительству и восстановленному уровню здания.
+    /// </summary>
     [DisallowMultipleComponent]
     public sealed class BuildSpot : MonoBehaviour
     {

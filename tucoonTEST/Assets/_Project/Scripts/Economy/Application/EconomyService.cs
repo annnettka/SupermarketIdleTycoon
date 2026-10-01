@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Economy
 {
+    /// <summary>
+    /// Implements income use cases over an injected wallet and publishes accepted earnings to observers.
+    /// Реализует сценарии начисления дохода поверх внедренного кошелька и сообщает наблюдателям о принятых начислениях.
+    /// </summary>
     public sealed class EconomyService
     {
         private readonly IWallet wallet;

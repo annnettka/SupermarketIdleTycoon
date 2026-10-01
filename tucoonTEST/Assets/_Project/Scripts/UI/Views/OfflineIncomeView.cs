@@ -3,6 +3,10 @@ using UnityEngine.UI;
 
 namespace SupermarketTycoon.UI
 {
+    /// <summary>
+    /// Presents one pending offline reward and exposes its collection command.
+    /// Отображает одну ожидающую офлайн-награду и предоставляет команду ее получения.
+    /// </summary>
     public sealed class OfflineIncomeView : MonoBehaviour
     {
         [SerializeField] private GameObject root;

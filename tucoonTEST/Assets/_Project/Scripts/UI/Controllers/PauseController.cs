@@ -6,6 +6,10 @@ using SupermarketTycoon.Stats;
 
 namespace SupermarketTycoon.UI
 {
+    /// <summary>
+    /// Coordinates pause, statistics, settings, saving, and menu navigation for the game session.
+    /// Координирует паузу, статистику, настройки, сохранение и переход в меню для игровой сессии.
+    /// </summary>
     public sealed class PauseController : IDisposable
     {
         private readonly PauseMenuView view;

@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Products
 {
+    /// <summary>
+    /// Associates a product definition with one presentation-only carried visual.
+    /// Связывает определение товара с одним визуальным представлением переносимого товара.
+    /// </summary>
     [Serializable]
     public sealed class CarryProductVisual
     {
@@ -19,6 +23,10 @@ namespace SupermarketTycoon.Products
         public GameObject VisualRoot => visualRoot;
     }
 
+    /// <summary>
+    /// Displays the customer's logical carried product without participating in stock ownership or payment.
+    /// Отображает логически переносимый покупателем товар, не участвуя во владении запасом или оплате.
+    /// </summary>
     [DisallowMultipleComponent]
     public sealed class ProductCarryView : MonoBehaviour
     {

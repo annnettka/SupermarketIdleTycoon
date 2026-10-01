@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Core
 {
+    /// <summary>
+    /// Owns user settings, applies them to Unity and audio adapters, and persists each accepted change.
+    /// Владеет пользовательскими настройками, применяет их к Unity и аудио-адаптерам и сохраняет каждое принятое изменение.
+    /// </summary>
     public sealed class SettingsService
     {
         private readonly SettingsRepository repository;

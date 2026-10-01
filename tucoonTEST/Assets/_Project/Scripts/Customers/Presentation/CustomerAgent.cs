@@ -6,6 +6,10 @@ using UnityEngine.AI;
 
 namespace SupermarketTycoon.Customers
 {
+    /// <summary>
+    /// Adapts the customer FSM to NavMesh movement, pooled lifecycle, station ownership, and carried-product visuals.
+    /// Адаптирует автомат покупателя к NavMesh, пулу, владению станциями и визуальному отображению переносимого товара.
+    /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(NavMeshAgent))]
     public sealed class CustomerAgent : MonoBehaviour
@@ -50,6 +54,10 @@ namespace SupermarketTycoon.Customers
             productCarryView = carryView;
         }
 
+        /// <summary>
+        /// Starts one pooled customer lifecycle with explicitly supplied dependencies and profile values.
+        /// Начинает один жизненный цикл покупателя из пула с явно переданными зависимостями и значениями профиля.
+        /// </summary>
         public void Begin(CustomerRuntimeContext runtimeContext)
         {
             Context = runtimeContext;
@@ -69,6 +77,10 @@ namespace SupermarketTycoon.Customers
             ChangeState(new CustomerSpawnState(this));
         }
 
+        /// <summary>
+        /// Releases every shelf and checkout claim before clearing context and returning the agent to the pool.
+        /// Освобождает все резервы полки и кассы перед очисткой контекста и возвратом агента в пул.
+        /// </summary>
         public void PrepareForPool()
         {
             state?.Exit();

@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Menu
 {
+    /// <summary>
+    /// Adds an unscaled, reversible camera drift to the menu without affecting scene-flow responsibilities.
+    /// Добавляет в меню обратимое движение камеры в независимом времени, не затрагивая обязанности переходов сцен.
+    /// </summary>
     [DisallowMultipleComponent]
     public sealed class MenuCameraDrift : MonoBehaviour
     {

@@ -4,6 +4,10 @@ using UnityEngine.UI;
 
 namespace SupermarketTycoon.Buildings
 {
+    /// <summary>
+    /// Renders the world-space build chip and keeps built-state interaction readable above the visible building bounds.
+    /// Отображает мировую кнопку строительства и удерживает взаимодействие построенного объекта над его видимыми границами.
+    /// </summary>
     public sealed class BuildSpotView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         private const float ChipScale = 0.0094f;

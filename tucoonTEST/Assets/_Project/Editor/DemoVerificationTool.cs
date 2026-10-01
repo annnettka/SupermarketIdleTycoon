@@ -15,6 +15,10 @@ using UnityEngine.SceneManagement;
 
 namespace SupermarketTycoon.Editor
 {
+    /// <summary>
+    /// Validates generated data, wrappers, scene references, stable IDs, scripts, and render compatibility.
+    /// Проверяет созданные данные, оболочки, ссылки сцен, стабильные ID, скрипты и совместимость рендеринга.
+    /// </summary>
     public static class DemoVerificationTool
     {
         private const string MenuPath = "Tools/Supermarket Tycoon/Validate Playable Demo";
@@ -22,12 +26,20 @@ namespace SupermarketTycoon.Editor
         private const string DataRoot = "Assets/_Project/Data/ScriptableObjects";
         private const string PrefabRoot = "Assets/_Project/Art/Prefabs";
 
+        /// <summary>
+        /// Runs playable-demo validation from the Unity Tools menu.
+        /// Запускает проверку игрового демо из меню Tools редактора Unity.
+        /// </summary>
         [MenuItem(MenuPath)]
         public static void ValidatePlayableDemo()
         {
             ValidatePlayableDemoBatch();
         }
 
+        /// <summary>
+        /// Runs the same validation in batch mode and throws one aggregated diagnostic on failure.
+        /// Выполняет ту же проверку в пакетном режиме и при ошибке выбрасывает одну сводную диагностику.
+        /// </summary>
         public static void ValidatePlayableDemoBatch()
         {
             var errors = new List<string>();

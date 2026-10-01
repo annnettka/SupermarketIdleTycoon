@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Products
 {
+    /// <summary>
+    /// Maps logical slot availability to four coarse visual fill states; it is not authoritative gameplay stock.
+    /// Отображает логическую доступность слота четырьмя визуальными уровнями заполнения; это не авторитетный игровой запас.
+    /// </summary>
     public enum ProductStockFill
     {
         Empty,
@@ -11,6 +15,10 @@ namespace SupermarketTycoon.Products
         Full
     }
 
+    /// <summary>
+    /// Owns one logical product slot, its reservation, and the six-item display group used to visualize stock.
+    /// Владеет одним логическим слотом товара, его резервированием и группой из шести предметов для отображения запаса.
+    /// </summary>
     [DisallowMultipleComponent]
     public sealed class ShelfProductSlot : MonoBehaviour
     {

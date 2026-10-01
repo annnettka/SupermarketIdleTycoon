@@ -9,6 +9,10 @@ using UnityEngine.Pool;
 
 namespace SupermarketTycoon.Customers
 {
+    /// <summary>
+    /// Owns customer pooling and spawn pacing, selecting unlocked profiles and releasing agents back to the pool.
+    /// Владеет пулом и темпом появления покупателей, выбирает разблокированные профили и возвращает агентов в пул.
+    /// </summary>
     public sealed class CustomerSpawner : MonoBehaviour
     {
         [SerializeField] private CustomerAgent customerPrefab;
@@ -87,10 +91,15 @@ namespace SupermarketTycoon.Customers
 
         private void Update()
         {
+            if (!initialized || progression == null || pause == null || stations == null)
+            {
+                return;
+            }
+
             var maximumActive = config != null
                 ? config.GetMaximumActiveCustomers(progression.CurrentLevel, fallbackMaximumActive)
                 : fallbackMaximumActive;
-            if (!initialized || pause.IsPaused || !stations.IsOperational || activeCount >= maximumActive)
+            if (pause.IsPaused || !stations.IsOperational || activeCount >= maximumActive)
             {
                 return;
             }

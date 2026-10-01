@@ -2,6 +2,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Core
 {
+    /// <summary>
+    /// Stores application-wide tuning values; runtime state is intentionally kept out of this asset.
+    /// Хранит общие параметры баланса приложения; состояние выполнения намеренно не помещается в этот ресурс.
+    /// </summary>
     [CreateAssetMenu(menuName = "Supermarket Tycoon/Game Config", fileName = "GameConfig")]
     public sealed class GameConfig : ScriptableObject
     {

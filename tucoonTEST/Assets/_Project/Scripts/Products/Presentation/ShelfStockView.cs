@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Products
 {
+    /// <summary>
+    /// Coordinates logical shelf slots, customer reservations, and staged visual restocking after depletion.
+    /// Координирует логические слоты полки, резервирования покупателей и поэтапное визуальное пополнение после опустошения.
+    /// </summary>
     [DisallowMultipleComponent]
     public sealed class ShelfStockView : MonoBehaviour
     {
@@ -173,6 +177,10 @@ namespace SupermarketTycoon.Products
             ListPool<CustomerAgent>.Release(missing);
         }
 
+        /// <summary>
+        /// Reuses short-lived candidate lists so reservation selection does not allocate during customer traffic.
+        /// Переиспользует временные списки кандидатов, чтобы выбор резервирования не создавал память во время потока покупателей.
+        /// </summary>
         private static class ListPool<T>
         {
             private static readonly Stack<List<T>> Pool = new();

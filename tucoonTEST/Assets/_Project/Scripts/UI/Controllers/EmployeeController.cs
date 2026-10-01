@@ -5,6 +5,10 @@ using SupermarketTycoon.Progression;
 
 namespace SupermarketTycoon.UI
 {
+    /// <summary>
+    /// Presents cashier progression and delegates validated purchases to EmployeeService.
+    /// Отображает прогрессию кассира и передает проверенные покупки сервису EmployeeService.
+    /// </summary>
     public sealed class EmployeeController : IDisposable
     {
         private readonly EmployeeView view;

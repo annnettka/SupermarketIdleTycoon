@@ -40,7 +40,7 @@ Transform:
   - {fileID: 687371345676911869}
   - {fileID: 809212843721049390}
   - {fileID: 6348966524110416064}
-  - {fileID: 8987300065842228848}
+  - {fileID: 533419293921330758}
   - {fileID: 7521704114694320418}
   m_Father: {fileID: 6504222061434813158}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -172,7 +172,7 @@ MonoBehaviour:
   - definition: {fileID: 11400000, guid: eec3e31ddb9f57c49af709841c2480ba, type: 2}
     visualRoot: {fileID: 4942056600403199420}
   - definition: {fileID: 11400000, guid: f788a71f55bb9564b84a92bfa2938b43, type: 2}
-    visualRoot: {fileID: 8906411362191543358}
+    visualRoot: {fileID: 20185094747956232}
   - definition: {fileID: 11400000, guid: 370b8b3ce205ba843b8f7c473d03ff76, type: 2}
     visualRoot: {fileID: 1040561649071712873}
 --- !u!114 &9218646244342147597
@@ -346,12 +346,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a55c8d482fd78a647870ae3a5da6fc88, type: 3}
---- !u!1 &8906411362191543358 stripped
+--- !u!1 &20185094747956232 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 229112421415994562, guid: a55c8d482fd78a647870ae3a5da6fc88, type: 3}
   m_PrefabInstance: {fileID: 246095665016660170}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &8987300065842228848 stripped
+--- !u!4 &533419293921330758 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 291987070708197004, guid: a55c8d482fd78a647870ae3a5da6fc88, type: 3}
   m_PrefabInstance: {fileID: 246095665016660170}

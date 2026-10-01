@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.UI
 {
+    /// <summary>
+    /// Owns reusable unscaled fade and slide transitions while preserving each panel's authored position.
+    /// Владеет переиспользуемыми переходами прозрачности и сдвига в независимом времени, сохраняя исходную позицию панели.
+    /// </summary>
     public sealed class PanelTransition : MonoBehaviour
     {
         private const float Duration = 0.2f;

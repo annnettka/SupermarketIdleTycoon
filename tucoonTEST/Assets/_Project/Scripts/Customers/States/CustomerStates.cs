@@ -2,6 +2,13 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Customers
 {
+    // Customer flow: Spawn -> Shelf reservation -> Shopping -> Checkout queue -> Pay -> Exit -> Pool.
+    // Поток покупателя: Появление -> Резерв полки -> Покупка -> Очередь -> Оплата -> Выход -> Пул.
+
+    /// <summary>
+    /// Defines the focused lifecycle contract implemented by every customer state.
+    /// Определяет узкий контракт жизненного цикла, реализуемый каждым состоянием покупателя.
+    /// </summary>
     internal interface ICustomerState
     {
         void Enter();
@@ -9,6 +16,10 @@ namespace SupermarketTycoon.Customers
         void Exit();
     }
 
+    /// <summary>
+    /// Provides shared access to the agent and its immutable runtime context for concrete states.
+    /// Предоставляет конкретным состояниям общий доступ к агенту и его неизменяемому контексту выполнения.
+    /// </summary>
     internal abstract class CustomerState : ICustomerState
     {
         protected CustomerState(CustomerAgent customer)
@@ -30,6 +41,10 @@ namespace SupermarketTycoon.Customers
         }
     }
 
+    /// <summary>
+    /// Waits at spawn until a shelf can be reserved, then transfers that reservation to movement.
+    /// Ожидает у точки появления доступную полку, резервирует ее и передает резерв состоянию движения.
+    /// </summary>
     internal sealed class CustomerSpawnState : CustomerState
     {
         private float retryTimer;
@@ -63,6 +78,10 @@ namespace SupermarketTycoon.Customers
         }
     }
 
+    /// <summary>
+    /// Moves toward the reserved shelf; loss of the station releases ownership and retries from spawn state.
+    /// Двигается к зарезервированной полке; потеря станции освобождает владение и возвращает к поиску.
+    /// </summary>
     internal sealed class CustomerMoveToShelfState : CustomerState
     {
         public CustomerMoveToShelfState(CustomerAgent customer) : base(customer)
@@ -100,6 +119,10 @@ namespace SupermarketTycoon.Customers
         }
     }
 
+    /// <summary>
+    /// Runs the profile-adjusted shopping timer, consumes reserved logical stock, and releases the shelf.
+    /// Выполняет скорректированный профилем таймер покупки, забирает зарезервированный запас и освобождает полку.
+    /// </summary>
     internal sealed class CustomerShoppingState : CustomerState
     {
         private float remaining;
@@ -136,6 +159,10 @@ namespace SupermarketTycoon.Customers
         }
     }
 
+    /// <summary>
+    /// Retains the carried product while retrying until an operational checkout queue accepts the customer.
+    /// Сохраняет переносимый товар и повторяет попытки, пока рабочая очередь кассы не примет покупателя.
+    /// </summary>
     internal sealed class CustomerMoveToCheckoutState : CustomerState
     {
         private float retryTimer;
@@ -169,6 +196,10 @@ namespace SupermarketTycoon.Customers
         }
     }
 
+    /// <summary>
+    /// Follows checkout-owned queue positions and either reaches payment or leaves after patience expires.
+    /// Следует позициям очереди, которыми владеет касса, и переходит к оплате либо уходит по истечении терпения.
+    /// </summary>
     internal sealed class CustomerQueueState : CustomerState
     {
         private float patienceRemaining;
@@ -218,6 +249,10 @@ namespace SupermarketTycoon.Customers
         }
     }
 
+    /// <summary>
+    /// Processes only the queue head, commits income and XP once, clears the product, and releases the checkout.
+    /// Обслуживает только первого в очереди, один раз начисляет доход и опыт, убирает товар и освобождает кассу.
+    /// </summary>
     internal sealed class CustomerPayState : CustomerState
     {
         private float remaining;
@@ -258,6 +293,10 @@ namespace SupermarketTycoon.Customers
         }
     }
 
+    /// <summary>
+    /// Moves the ownership-free customer to the exit and returns the agent to its pool on arrival.
+    /// Ведет покупателя без занятых ресурсов к выходу и по прибытии возвращает агента в пул.
+    /// </summary>
     internal sealed class CustomerExitState : CustomerState
     {
         public CustomerExitState(CustomerAgent customer) : base(customer)

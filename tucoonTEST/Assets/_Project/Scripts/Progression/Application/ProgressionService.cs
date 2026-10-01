@@ -2,6 +2,10 @@ using System;
 
 namespace SupermarketTycoon.Progression
 {
+    /// <summary>
+    /// Owns normalized XP and level state, including overflow carry and the configured maximum level.
+    /// Владеет нормализованным состоянием опыта и уровня, включая перенос избытка и настроенный максимальный уровень.
+    /// </summary>
     public sealed class ProgressionService
     {
         private readonly ProgressionConfig config;
@@ -28,6 +32,10 @@ namespace SupermarketTycoon.Progression
             return config.GetUnlockSummary(level);
         }
 
+        /// <summary>
+        /// Adds positive XP, carries overflow across multiple levels, and clamps at the configured maximum.
+        /// Добавляет положительный опыт, переносит избыток через несколько уровней и ограничивает его максимумом.
+        /// </summary>
         public void AddXp(int amount)
         {
             if (amount <= 0)

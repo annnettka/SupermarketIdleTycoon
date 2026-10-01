@@ -3,6 +3,10 @@ using SupermarketTycoon.Offline;
 
 namespace SupermarketTycoon.UI
 {
+    /// <summary>
+    /// Shows pending offline income and commits collection through OfflineIncomeService.
+    /// Показывает ожидающий офлайн-доход и выполняет его получение через OfflineIncomeService.
+    /// </summary>
     public sealed class OfflineIncomeController : IDisposable
     {
         private readonly OfflineIncomeView view;

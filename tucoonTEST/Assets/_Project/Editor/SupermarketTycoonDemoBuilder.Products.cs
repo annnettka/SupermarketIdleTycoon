@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Editor
 {
+    /// <summary>
+    /// Builds project-owned product definitions, wrappers, grouped stock displays, and environment displays.
+    /// Создает собственные определения и оболочки товаров, групповые выкладки запасов и витрины окружения.
+    /// </summary>
     public static partial class SupermarketTycoonDemoBuilder
     {
         private const string FoodModelRoot = Root + "/kennyfood/Models/FBX format";
@@ -430,6 +434,10 @@ namespace SupermarketTycoon.Editor
             }
         }
 
+        /// <summary>
+        /// Captures deterministic authoring data for one generated product without introducing runtime state.
+        /// Хранит детерминированные данные авторинга одного создаваемого товара без состояния выполнения.
+        /// </summary>
         private readonly struct ProductSpec
         {
             public ProductSpec(

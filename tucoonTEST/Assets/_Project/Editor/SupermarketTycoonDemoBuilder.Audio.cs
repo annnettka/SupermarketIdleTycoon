@@ -7,6 +7,10 @@ using UnityEngine.Audio;
 
 namespace SupermarketTycoon.Editor
 {
+    /// <summary>
+    /// Owns the audio-import and generated-mixer portion of the playable-demo builder.
+    /// Владеет частью конструктора демо, отвечающей за импорт аудио и создаваемый микшер.
+    /// </summary>
     public static partial class SupermarketTycoonDemoBuilder
     {
         private const string AudioRoot = Root + "/Audio";

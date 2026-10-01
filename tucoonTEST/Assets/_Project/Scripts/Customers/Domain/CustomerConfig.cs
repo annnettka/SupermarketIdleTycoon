@@ -2,6 +2,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Customers
 {
+    /// <summary>
+    /// Stores shared navigation, timing, and traffic defaults while customer profiles provide variation.
+    /// Хранит общие параметры навигации, времени и потока, тогда как профили задают различия покупателей.
+    /// </summary>
     [CreateAssetMenu(menuName = "Supermarket Tycoon/Customer Config", fileName = "CustomerConfig")]
     public sealed class CustomerConfig : ScriptableObject
     {

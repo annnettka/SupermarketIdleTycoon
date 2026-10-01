@@ -2,6 +2,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Products
 {
+    /// <summary>
+    /// Categorizes products for authored displays and future assortment rules.
+    /// Категоризирует товары для подготовленных витрин и будущих правил ассортимента.
+    /// </summary>
     public enum ProductCategory
     {
         Fruit,
@@ -13,6 +17,10 @@ namespace SupermarketTycoon.Products
         Premium
     }
 
+    /// <summary>
+    /// Defines immutable product identity, value, unlock requirements, and visual representation.
+    /// Определяет неизменяемую идентичность товара, ценность, требования разблокировки и визуальное представление.
+    /// </summary>
     [CreateAssetMenu(menuName = "Supermarket Tycoon/Product Definition", fileName = "ProductDefinition")]
     public sealed class ProductDefinition : ScriptableObject
     {

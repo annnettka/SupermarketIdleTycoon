@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.Objectives
 {
+    /// <summary>
+    /// Identifies objective event semantics while concrete targets and rewards remain data-driven.
+    /// Определяет семантику событий целей, оставляя конкретные задачи и награды управляемыми данными.
+    /// </summary>
     public enum ObjectiveType
     {
         BuildBuilding,
@@ -15,6 +19,10 @@ namespace SupermarketTycoon.Objectives
         ReachRating
     }
 
+    /// <summary>
+    /// Describes one ordered objective, its optional stable-ID filter, target, and rewards.
+    /// Описывает одну последовательную цель, ее необязательный фильтр стабильного ID, значение и награды.
+    /// </summary>
     [Serializable]
     public sealed class ObjectiveDefinition
     {
@@ -49,6 +57,10 @@ namespace SupermarketTycoon.Objectives
         }
     }
 
+    /// <summary>
+    /// Stores the ordered tutorial and progression objective sequence independently from runtime state.
+    /// Хранит упорядоченную последовательность обучающих и прогрессионных целей отдельно от состояния выполнения.
+    /// </summary>
     [CreateAssetMenu(menuName = "Supermarket Tycoon/Objective Config", fileName = "ObjectiveConfig")]
     public sealed class ObjectiveConfig : ScriptableObject
     {

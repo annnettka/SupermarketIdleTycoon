@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace SupermarketTycoon.UI
 {
+    /// <summary>
+    /// Binds main-menu commands to scene flow, settings, save availability, audio, and application exit.
+    /// Связывает команды главного меню с переходами сцен, настройками, наличием сохранения, аудио и выходом.
+    /// </summary>
     public sealed class MainMenuController : IDisposable
     {
         private readonly MainMenuView view;

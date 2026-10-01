@@ -1,11 +1,18 @@
+using System.Linq;
 using NUnit.Framework;
 using SupermarketTycoon.Buildings;
 using SupermarketTycoon.Products;
+using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace SupermarketTycoon.Tests
 {
+    /// <summary>
+    /// Verifies grouped product topology, stock presentation, readable build chips, and generated scene integrity.
+    /// Проверяет структуру групп товаров, отображение запаса, читаемость кнопок строительства и целостность созданной сцены.
+    /// </summary>
     public sealed class VisualPresentationTests
     {
         [Test]
@@ -73,6 +80,79 @@ namespace SupermarketTycoon.Tests
             {
                 Object.DestroyImmediate(spot);
                 Object.DestroyImmediate(definition);
+            }
+        }
+
+        [Test]
+        public void GeneratedProductPrefabs_HaveExpectedGroupedStockTopology()
+        {
+            AssertShelfGroups("Assets/_Project/Art/Prefabs/Buildings/ShelfBuilding.prefab");
+            AssertShelfGroups("Assets/_Project/Art/Prefabs/Buildings/PremiumShelfBuilding.prefab");
+
+            var fresh = AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/_Project/Art/Prefabs/Environment/FreshMarketDisplay.prefab");
+            Assert.That(fresh, Is.Not.Null);
+            var freshChildren = fresh.GetComponentsInChildren<Transform>(true);
+            Assert.That(freshChildren.Count(child => child.name.EndsWith("Produce Case")), Is.EqualTo(3));
+            var produceGroups = freshChildren.Where(child => child.name.EndsWith("Produce Group")).ToArray();
+            Assert.That(produceGroups, Has.Length.EqualTo(3));
+            Assert.That(produceGroups.All(group => group.childCount == 6), Is.True);
+
+            var checkout = AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/_Project/Art/Prefabs/Environment/CheckoutImpulseDisplay.prefab");
+            Assert.That(checkout, Is.Not.Null);
+            var impulseGroups = checkout.GetComponentsInChildren<Transform>(true)
+                .Where(child => child.name.EndsWith("Impulse Group"))
+                .ToArray();
+            Assert.That(impulseGroups, Has.Length.EqualTo(2));
+            Assert.That(impulseGroups.All(group => group.childCount == 4), Is.True);
+        }
+
+        [Test]
+        public void GeneratedGameScene_HasNoMissingScriptsAndExpectedBuildSpots()
+        {
+            var previousSetup = EditorSceneManager.GetSceneManagerSetup();
+            try
+            {
+                var scene = EditorSceneManager.OpenScene("Assets/_Project/Scenes/Game.unity", OpenSceneMode.Single);
+                var roots = scene.GetRootGameObjects();
+                var missingScriptCount = roots
+                    .SelectMany(root => root.GetComponentsInChildren<Transform>(true))
+                    .Sum(transform => GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(transform.gameObject));
+
+                Assert.That(missingScriptCount, Is.Zero);
+                Assert.That(
+                    Object.FindObjectsByType<BuildSpot>(FindObjectsInactive.Include, FindObjectsSortMode.None),
+                    Has.Length.EqualTo(6));
+
+                var freshIsland = GameObject.Find("Fresh Food Island");
+                Assert.That(freshIsland, Is.Not.Null);
+                Assert.That(freshIsland.transform.position.x, Is.EqualTo(-7.2f).Within(0.01f));
+                Assert.That(freshIsland.transform.position.z, Is.EqualTo(0.15f).Within(0.01f));
+            }
+            finally
+            {
+                if (previousSetup.Any(item => item.isLoaded))
+                {
+                    EditorSceneManager.RestoreSceneManagerSetup(previousSetup);
+                }
+                else
+                {
+                    EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+                }
+            }
+        }
+
+        private static void AssertShelfGroups(string path)
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            Assert.That(prefab, Is.Not.Null, path);
+            var slots = prefab.GetComponentsInChildren<ShelfProductSlot>(true);
+            Assert.That(slots, Has.Length.EqualTo(8), path);
+            for (var i = 0; i < slots.Length; i++)
+            {
+                var serialized = new SerializedObject(slots[i]);
+                Assert.That(serialized.FindProperty("visualItems").arraySize, Is.EqualTo(6), slots[i].name);
             }
         }
     }
